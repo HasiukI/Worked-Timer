@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Worked_Timer.ViewModel;
 
 namespace Worked_Timer
 {
@@ -19,6 +20,8 @@ namespace Worked_Timer
         public MainWindow()
         {
             InitializeComponent();
+            
         }
+
     }
 }

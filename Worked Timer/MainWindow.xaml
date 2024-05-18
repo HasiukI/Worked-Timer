@@ -3,10 +3,46 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Worked_Timer"
+         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        xmlns:local="clr-namespace:Worked_Timer.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" Height="450" Width="320"
+        ShowInTaskbar="False"
+        WindowStyle="None"
+        Top="{Binding Window.TopPosition}" 
+        Left="{Binding Window.LeftPosition}"
+        >
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
 
+    <Grid>
+        <tb:TaskbarIcon x:Name="MyNotifyIcon" 
+          
+            ToolTipText="Hello, world!" 
+            Visibility="Visible"
+            LeftClickCommand="{Binding Window.ShowWindowCommand}" >
+            
+        </tb:TaskbarIcon>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+
+           
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Command="{Binding  Window.HideProgram}">Hide</Button>
+                <Button Command="{Binding Window.CloseProgram}">Exit</Button>
+            </StackPanel>
+        </Grid>
     </Grid>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding Window.WindowLoadedCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
 </Window>
