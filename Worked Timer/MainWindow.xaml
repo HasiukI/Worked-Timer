@@ -32,7 +32,13 @@
                 <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
 
-           
+            <StackPanel>
+                <TextBlock Text="Time work"/>
+                <TextBox Text="{Binding Timer.TimerWork, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='hh:mm'}"/>
+                <TextBlock Text="Time rest"/>
+                <TextBox Text="{Binding Timer.TimerRest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='hh:mm'}"/>
+                <Button/>
+            </StackPanel>
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Command="{Binding  Window.HideProgram}">Hide</Button>
                 <Button Command="{Binding Window.CloseProgram}">Exit</Button>
