@@ -34,10 +34,12 @@
 
             <StackPanel>
                 <TextBlock Text="Time work"/>
-                <TextBox Text="{Binding Timer.TimerWork, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='hh:mm'}"/>
+                <TextBox Text="{Binding Timer.TimerWorkString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='hh:mm'}"/>
                 <TextBlock Text="Time rest"/>
-                <TextBox Text="{Binding Timer.TimerRest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='hh:mm'}"/>
-                <Button/>
+                <TextBox Text="{Binding Timer.TimerRestString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='hh:mm'}"/>
+                <Button  Command="{Binding Timer.Start}" Content="Start"/>
+                <TextBlock Text="{Binding Timer.Labelwork}"/>
+                <TextBlock Text="{Binding Timer.LabelRest}"/>
             </StackPanel>
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Command="{Binding  Window.HideProgram}">Hide</Button>
