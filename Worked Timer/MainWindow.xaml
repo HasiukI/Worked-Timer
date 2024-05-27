@@ -28,23 +28,100 @@
 
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition/>
                 <RowDefinition Height="50"/>
+                <RowDefinition />
             </Grid.RowDefinitions>
-
-            <StackPanel>
-                <TextBlock Text="Time work"/>
-                <TextBox Text="{Binding Timer.TimerWorkString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='hh:mm'}"/>
-                <TextBlock Text="Time rest"/>
-                <TextBox Text="{Binding Timer.TimerRestString, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='hh:mm'}"/>
-                <Button  Command="{Binding Timer.Start}" Content="Start"/>
-                <TextBlock Text="{Binding Timer.Labelwork}"/>
-                <TextBlock Text="{Binding Timer.LabelRest}"/>
-            </StackPanel>
-            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            
+            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Command="{Binding  Window.HideProgram}">Hide</Button>
                 <Button Command="{Binding Window.CloseProgram}">Exit</Button>
             </StackPanel>
+
+
+             <!--Started-->
+            <Grid  Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+
+                
+                <StackPanel>
+
+                </StackPanel>
+                
+                <StackPanel>
+
+                </StackPanel>
+                <StackPanel>
+
+                </StackPanel>
+            </Grid>
+            
+            <!--SetValue-->
+            <StackPanel Grid.Row="1">
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel>
+                        <!--Cicle-->
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Sets"/>
+                            <TextBox Width="50" Text="{Binding Timer.CountCycles, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                        <!--Time-->
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Time work"/>
+                            <TextBox  Width="50" Text="{Binding Timer.TimeWorkInMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                        <!--Rest-->
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Time rest"/>
+                            <TextBox Width="50" Text="{Binding Timer.TimeBreakInMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <TextBlock Grid.Column="1" Text="Total"/>
+                </Grid>
+
+
+                <ListBox ItemsSource="{Binding Timer.Cycles}" Height="100" SelectedIndex="{Binding Timer.SelectedBigRest}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Position}"/>
+                                <TextBlock Text="{Binding ActionOfTime}"/>
+                            </StackPanel>
+                          
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Time big rest"/>
+                    <TextBox Width="50" Text="{Binding Timer.TimeBigRestInMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </StackPanel>
+                
+                <TextBlock Text="{Binding Timer.SelectedBigRest}"/>
+                <Button  Command="{Binding Timer.Start}" Content="Start"/>
+                <TextBlock Text="{Binding Timer.Labelwork}"/>
+                <TextBlock Text="{Binding Timer.LabelRest}"/>
+                <TextBlock FontSize="18" Text="{Binding Timer.TypeTimerLabel}"/>
+                <Button  Command="{Binding Timer.PauseCommand}" Content="Pause"/>
+                <Button  Command="{Binding Timer.PlayCommand}" Content="Play"/>
+                <TextBlock Text="Extra"/>
+                <TextBlock Text="{Binding Timer.ExtraTimeWorkLabel}"/>
+                <TextBlock Text="{Binding Timer.ExtraTimeRestLabel}"/>
+
+                <Button  Command="{Binding Timer.StopExtra}" Content="StopExtra"/>
+            </StackPanel>
+            
+            
         </Grid>
     </Grid>
 

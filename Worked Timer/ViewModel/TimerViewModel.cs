@@ -10,73 +10,175 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Timers;
 using System.Diagnostics;
+using System.Windows.Forms;
+using System.Collections.ObjectModel;
+using Worked_Timer.Model;
+using System.Windows.Threading;
 
 namespace Worked_Timer.ViewModel
 {
     class TimerViewModel :ViewModelBase
     {
-        public System.Timers.Timer TimerWork;
-        public System.Timers.Timer breakTimer;
-        public System.Timers.Timer TimerDisplay;
-        private  Stopwatch workStopwatch;
-        private  Stopwatch breakStopwatch;
-        private System.Timers.Timer displayTimer;
-        private  int repeatCount = 3;
+        private readonly string[] TypesTimerLabel = { "Work", "Rest", "Big Rest" };
+        private readonly string[] TypesMessage = { "It's time to get to work", "You should take a break", "Don't forget to eat" };
 
-        private string _timerWorkString;
-        public string TimerWorkString
+        private int curentPosition;
+
+        private System.Timers.Timer _curentTimer;
+        private System.Timers.Timer _displayTimer;
+        private DispatcherTimer _extraTimer;
+        private Stopwatch _stopwatch;
+
+        public ObservableCollection<MomentTimer> Cycles { get; }
+
+        public TimerViewModel()
         {
-            get => _timerWorkString;
+            Cycles = new ObservableCollection<MomentTimer>();
+        }
+
+        #region Property
+
+        #region Seters
+        private string _timeWorkInMinute;
+        public string TimeWorkInMinute
+        {
+            get => _timeWorkInMinute;
             set
             {
-                if(_timerWorkString != value)
+                if (_timeWorkInMinute != value)
                 {
                     if (value.Length <= 3)
                     {
                         if (value.All(char.IsDigit))
                         {
-                            _timerWorkString = value;
-                            onPropertyChanged(nameof(TimerWorkString));
+                            _timeWorkInMinute = value;
+                            onPropertyChanged(nameof(TimeWorkInMinute));
                         }
                     }
-                   
+
                 }
             }
         }
 
-        public TimerViewModel()
+        private string _timeBreakInMinutes;
+        public string TimeBreakInMinutes
         {
-           
-        }
-
-
-        private string _timerRestString;
-        public string TimerRestString
-        {
-            get => _timerRestString;
+            get => _timeBreakInMinutes;
             set
             {
-                if (_timerRestString != value)
-                { 
+                if (_timeBreakInMinutes != value)
+                {
                     if (value.Length <= 3)
                     {
                         if (value.All(char.IsDigit))
                         {
-                            _timerRestString = value;
-                            onPropertyChanged(nameof(TimerRestString));
+                            _timeBreakInMinutes = value;
+                            onPropertyChanged(nameof(TimeBreakInMinutes));
                         }
                     }
                 }
             }
         }
 
+        private string _timeBigRestInMinutes;
+        public string TimeBigRestInMinutes
+        {
+            get => _timeBigRestInMinutes;
+            set
+            {
+                if (_timeBigRestInMinutes != value)
+                {
+                    if (value.Length <= 3)
+                    {
+                        if (value.All(char.IsDigit))
+                        {
+                            _timeBigRestInMinutes = value;
+                            onPropertyChanged(nameof(TimeBigRestInMinutes));
+                        }
+                    }
+                }
+            }
+        }
+
+        private int _countCycles;
+        public int CountCycles
+        {
+            get => _countCycles;
+            set
+            {
+                if (value != _countCycles)
+                {
+                    _countCycles = value;
+                    onPropertyChanged(nameof(CountCycles));
+                    updateSeters();
+                }
+            }
+        }
+
+        private int _SelectedBigRest;
+        public int SelectedBigRest
+        {
+            get => _SelectedBigRest;
+            set
+            {
+                if (value != _SelectedBigRest && value % 2 != 0)
+                {
+                    _SelectedBigRest = value;
+                    onPropertyChanged(nameof(SelectedBigRest));
+                    updateSeters();
+                }
+            }
+        }
+        #endregion
+
+        #region View
+        private string _typeTimerLabel;
+        public string TypeTimerLabel
+        {
+            get => _typeTimerLabel;
+            set
+            {
+                if (_typeTimerLabel != value)
+                {
+                    _typeTimerLabel = value;
+                    onPropertyChanged(nameof(TypeTimerLabel));
+                }
+            }
+        }
+
+        private TimeSpan _extraTimeWorkLabel;
+        public TimeSpan ExtraTimeWorkLabel
+        {
+            get => _extraTimeWorkLabel;
+            set
+            {
+                if (_extraTimeWorkLabel != value)
+                {
+                    _extraTimeWorkLabel = value;
+                    onPropertyChanged(nameof(ExtraTimeWorkLabel));
+                }
+            }
+        }
+        private TimeSpan _extraTimeRestLabel;
+        public TimeSpan ExtraTimeRestLabel
+        {
+            get => _extraTimeRestLabel;
+            set
+            {
+                if (_extraTimeRestLabel != value)
+                {
+                    _extraTimeRestLabel = value;
+                    onPropertyChanged(nameof(ExtraTimeRestLabel));
+                }
+            }
+        }
         private string labelwork;
         public string Labelwork
         {
             get => labelwork;
             set
             {
-                if(labelwork != value)
+                if (labelwork != value)
                 {
                     labelwork = value;
                     onPropertyChanged(nameof(Labelwork));
@@ -96,69 +198,189 @@ namespace Worked_Timer.ViewModel
                 }
             }
         }
-        public ICommand Start { get => new RelayCommand(() =>
+        #endregion
+
+        #endregion
+
+
+        #region Command
+        public ICommand PauseCommand
         {
-            TimerWork = new System.Timers.Timer(int.Parse(TimerWorkString) * 60 * 1000);
-            breakTimer = new System.Timers.Timer(int.Parse(TimerRestString) * 60 * 1000);
-            displayTimer = new System.Timers.Timer();
-
-            TimerWork.Elapsed += OnWorkTimeElapsed;
-            breakTimer.Elapsed += OnBreakTimeElapsed;
-            displayTimer.Elapsed += OnDisplayTimeElapsed;
-
-            TimerWork.AutoReset = false;
-            breakTimer.AutoReset = false;
-            displayTimer.AutoReset = true; // Repeat every second
-
-            TimerWork.Start();
-            workStopwatch = new Stopwatch();
-            breakStopwatch = new Stopwatch();
-
-            workStopwatch.Start();
-            displayTimer.Start();
-        });
+            get => new RelayCommand(() =>
+            {
+                StopTimers();
+            });
         }
 
-        private  void OnWorkTimeElapsed(Object source, ElapsedEventArgs e)
+        public ICommand PlayCommand
         {
-            workStopwatch.Stop();
-            MessageBox.Show("Час роботи завершено. Починається перерва.");
-
-            repeatCount--;
-            if (repeatCount > 0)
+            get => new RelayCommand(() =>
             {
-                breakStopwatch.Start();
-                breakTimer.Start();
+                StartTimers(false);
+            });
+        }
+
+        public ICommand Start
+        {
+            get => new RelayCommand(() =>
+            {
+                curentPosition = 0;
+
+                _curentTimer = new System.Timers.Timer(int.Parse(TimeWorkInMinute) * 1000);
+                _curentTimer.Elapsed += InvokeWindow;
+
+                _displayTimer = new System.Timers.Timer();
+                _displayTimer.Elapsed += OnDisplayTimeElapsed;        
+
+                _stopwatch = new Stopwatch();
+
+                _extraTimer = new DispatcherTimer();
+                _extraTimer.Interval = TimeSpan.FromSeconds(1); // Відстежує кожну секунду
+                _extraTimer.Tick += ExtraTimeTimer_Tick;
+
+                StartTimers(false);
+                     
+            });
+        }
+
+        public ICommand StopExtra
+        {
+            get => new RelayCommand(() =>
+            {
+                _extraTimer.Stop();
+                MomentTimer curentMoment = Cycles.Where(s => s.Position == curentPosition).FirstOrDefault();
+
+                if (curentMoment == null)
+                {
+                    System.Windows.Forms.MessageBox.Show("Усe");
+                    return;
+                }
+
+                StartNextTimer(curentMoment);
+            });
+        }
+        #endregion
+
+        #region Method
+
+        private void StopTimers()
+        {
+            _stopwatch.Stop();
+            _curentTimer.Stop();
+            _displayTimer.Stop();
+        }
+        private void StartTimers(bool IsRestart)
+        {
+            _curentTimer.Start();
+            _displayTimer.Start();
+
+            if(IsRestart)
+                _stopwatch.Restart();
+            else
+                _stopwatch.Start();
+        }
+
+        /// <summary>
+        /// Show Window 
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
+        private void InvokeWindow(Object source, ElapsedEventArgs e)
+        {
+            StopTimers();
+
+            curentPosition++;
+
+            MomentTimer curentMoment = Cycles.Where(s => s.Position == curentPosition).FirstOrDefault();
+
+            if (curentMoment == null)
+            {
+                System.Windows.Forms.MessageBox.Show("Усe");
+                return;
+            }
+
+            var rez = System.Windows.Forms.MessageBox.Show(curentMoment.Message, "Перерва", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (rez == DialogResult.Yes)
+            {
+                StartNextTimer(curentMoment);
+            }
+            else
+            {
+                _extraTimer.Start();
+            }
+
+        }
+
+        private void StartNextTimer(MomentTimer curentMoment) {
+            switch (curentMoment.ActionOfTime)
+            {
+                case ActionOfTime.Work:
+                    _curentTimer = new System.Timers.Timer(int.Parse(TimeWorkInMinute) * 1000);
+                    TypeTimerLabel = TypesTimerLabel[0];
+                    break;
+                case ActionOfTime.Rest:
+                    _curentTimer = new System.Timers.Timer(int.Parse(TimeBreakInMinutes) * 1000);
+                    TypeTimerLabel = TypesTimerLabel[1];
+                    break;
+                case ActionOfTime.BigRest:
+                    _curentTimer = new System.Timers.Timer(int.Parse(TimeBigRestInMinutes) * 1000);
+                    TypeTimerLabel = TypesTimerLabel[2];
+                    break;
+            }
+
+            _curentTimer.Elapsed += InvokeWindow;
+
+            StartTimers(true);
+        }
+
+        private void ExtraTimeTimer_Tick(object sender, EventArgs e)
+        {
+           if( curentPosition % 2 == 0)
+            {
+                ExtraTimeWorkLabel += _extraTimer.Interval;
+            }
+            else
+            {
+                ExtraTimeRestLabel += _extraTimer.Interval;
             }
         }
 
-        private  void OnDisplayTimeElapsed(Object source, ElapsedEventArgs e)
+        /// <summary>
+        /// Show Method every second for view
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="e"></param>
+        private void OnDisplayTimeElapsed(Object source, ElapsedEventArgs e)
         {
-            if (workStopwatch.IsRunning)
-            {
-                TimeSpan remaining = TimeSpan.FromMinutes(TimerWork.Interval / 60000) - workStopwatch.Elapsed;
-                Labelwork = $"Залишилось {remaining.TotalMinutes} хвилин роботи.";
-          
-            }
-            else if (breakStopwatch.IsRunning)
-            {
-                TimeSpan remaining = TimeSpan.FromMinutes(breakTimer.Interval / 60000) - breakStopwatch.Elapsed;
-                LabelRest = $"Залишилось {remaining.TotalMinutes} хвилин перерви.";
-      
-            }
+            TimeSpan remaining = TimeSpan.FromSeconds(_curentTimer.Interval / 1000) - _stopwatch.Elapsed;
+            Labelwork = $"Залишилось {remaining.Minutes}.{remaining.Seconds}";
+
         }
 
-        private  void OnBreakTimeElapsed(Object source, ElapsedEventArgs e)
+        private void updateSeters()
         {
-            breakStopwatch.Stop();
-            Console.WriteLine("Перерва завершена. Починається час роботи.");
-
-            if (repeatCount > 0)
+            Cycles.Clear();
+            for (int i = 0; i < CountCycles * 2 && i + 1 != CountCycles * 2; i++)
             {
-                workStopwatch.Reset();
-                workStopwatch.Start();
-                TimerWork.Start();
+                if (i % 2 == 0)
+                {
+                    Cycles.Add(new MomentTimer() { Position = i, ActionOfTime = ActionOfTime.Work, Message = TypesMessage[0] });
+                }
+                else
+                {
+                    if (SelectedBigRest == i)
+                        Cycles.Add(new MomentTimer() { Position = i, ActionOfTime = ActionOfTime.BigRest, Message = TypesMessage[2] });
+                    else
+                        Cycles.Add(new MomentTimer() { Position = i, ActionOfTime = ActionOfTime.Rest, Message = TypesMessage[1] });
+                }
+
+
             }
         }
     }
+    #endregion
+
+
+
 }
