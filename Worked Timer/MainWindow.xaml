@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:local="clr-namespace:Worked_Timer.ViewModel"
         mc:Ignorable="d"
@@ -13,6 +14,68 @@
         Top="{Binding Window.TopPosition}" 
         Left="{Binding Window.LeftPosition}"
         >
+    <Window.Resources>
+        <Storyboard x:Key="ShowSets">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="grid_Sets" Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="50"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.5000000" Value="350"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_ShowSets" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Collapsed}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_CloseSets" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_SetsInfo" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="CloseSets">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="grid_Sets" Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <SplineDoubleKeyFrame KeyTime="00:00:00" Value="350"/>
+                <SplineDoubleKeyFrame KeyTime="00:00:00.5000000" Value="50"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_ShowSets" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Visible}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_CloseSets" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Collapsed}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_SetsInfo" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Collapsed}"/>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="ShowProperty">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="grid_Property" Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="50"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.5000000" Value="400"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_ShowProperty" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Collapsed}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_CloseProperty" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PropertyMain" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="CloseProperty">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="grid_Property" Storyboard.TargetProperty="(FrameworkElement.Height)">
+                <SplineDoubleKeyFrame KeyTime="00:00:00" Value="400"/>
+                <SplineDoubleKeyFrame KeyTime="00:00:00.5000000" Value="50"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_ShowProperty" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Visible}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_CloseProperty" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Collapsed}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PropertyMain" Storyboard.TargetProperty="(UIElement.Visibility)">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Collapsed}"/>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+    </Window.Resources>
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>
@@ -23,7 +86,7 @@
             ToolTipText="Hello, world!" 
             Visibility="Visible"
             LeftClickCommand="{Binding Window.ShowWindowCommand}" >
-            
+
         </tb:TaskbarIcon>
 
         <Grid>
@@ -31,97 +94,156 @@
                 <RowDefinition Height="50"/>
                 <RowDefinition />
             </Grid.RowDefinitions>
-            
+
             <StackPanel  Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Command="{Binding  Window.HideProgram}">Hide</Button>
                 <Button Command="{Binding Window.CloseProgram}">Exit</Button>
             </StackPanel>
 
+            <Grid Grid.Row="1">
+                <!--SetsValue-->
+                <Grid x:Name="grid_Sets" Background="Aqua" Height="50" VerticalAlignment="Top" Panel.ZIndex="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
 
-             <!--Started-->
-            <Grid  Grid.Row="1">
-                <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
+                    <!--Show Sets-->
+                    <Grid Grid.Row="0">
+                        <Button x:Name="button_ShowSets" HorizontalAlignment="Left" Content="Sets Show">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <ei:ControlStoryboardAction Storyboard="{StaticResource ShowSets}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Button>
+                        <Button x:Name="button_CloseSets" HorizontalAlignment="Left" Content="Sets close" Visibility="Collapsed">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <ei:ControlStoryboardAction Storyboard="{StaticResource CloseSets}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Button>
+                    </Grid>
 
-                
-                <StackPanel>
+                    <Grid x:Name="grid_SetsInfo" Grid.Row="1" Visibility="Collapsed">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
 
-                </StackPanel>
-                
-                <StackPanel>
+                        <!--Cicle Time Rest-->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
 
-                </StackPanel>
-                <StackPanel>
+                            <StackPanel>
+                                <!--Cicle-->
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Sets"/>
+                                    <TextBox Width="50" Text="{Binding Timer.CountCycles, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </StackPanel>
+                                <!--Time-->
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Time work"/>
+                                    <TextBox  Width="50" Text="{Binding Timer.TimeWorkInMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </StackPanel>
+                                <!--Rest-->
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="Time rest"/>
+                                    <TextBox Width="50" Text="{Binding Timer.TimeBreakInMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                </StackPanel>
+                            </StackPanel>
 
-                </StackPanel>
-            </Grid>
-            
-            <!--SetValue-->
-            <StackPanel Grid.Row="1">
+                            <TextBlock Grid.Column="1" Text="Total"/>
+                        </Grid>
 
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
+                        <!--Big Rest-->
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto"/>
+                                <RowDefinition  Height="auto"/>
+                                <RowDefinition  Height="auto"/>
+                            </Grid.RowDefinitions>
 
-                    <StackPanel>
-                        <!--Cicle-->
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Sets"/>
-                            <TextBox Width="50" Text="{Binding Timer.CountCycles, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
-                        <!--Time-->
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Time work"/>
-                            <TextBox  Width="50" Text="{Binding Timer.TimeWorkInMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
-                        <!--Rest-->
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Time rest"/>
-                            <TextBox Width="50" Text="{Binding Timer.TimeBreakInMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
-                    </StackPanel>
+                            <ListBox  ItemsSource="{Binding Timer.Cycles}" Height="100" SelectedIndex="{Binding Timer.SelectedBigRest}">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Position}"/>
+                                            <TextBlock Text="{Binding ActionOfTime}"/>
+                                        </StackPanel>
 
-                    <TextBlock Grid.Column="1" Text="Total"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+
+                            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                <TextBlock Text="Time big rest"/>
+                                <TextBox Width="50" Text="{Binding Timer.TimeBigRestInMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+
+                            <Button Grid.Row="2" Content="Start">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Click">
+                                        <i:InvokeCommandAction Command="{Binding Timer.Start}"/>
+                                        <ei:ControlStoryboardAction Storyboard="{StaticResource CloseSets}" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </Button>
+                        </Grid>
+                    </Grid>
+
                 </Grid>
 
+                <!--Main-->
+                <Grid Background="Violet" Height="300">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Timer.Labelwork}"/>
+                        <TextBlock Text="{Binding Timer.LabelRest}"/>
+                        <TextBlock FontSize="18" Text="{Binding Timer.TypeTimerLabel}"/>
+                        <Button  Command="{Binding Timer.PauseCommand}" Content="Pause"/>
+                        <Button  Command="{Binding Timer.PlayCommand}" Content="Play"/>
+                        <TextBlock Text="Extra"/>
+                        <TextBlock Text="{Binding Timer.ExtraTimeWorkLabel}"/>
+                        <TextBlock Text="{Binding Timer.ExtraTimeRestLabel}"/>
 
-                <ListBox ItemsSource="{Binding Timer.Cycles}" Height="100" SelectedIndex="{Binding Timer.SelectedBigRest}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding Position}"/>
-                                <TextBlock Text="{Binding ActionOfTime}"/>
-                            </StackPanel>
-                          
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
+                        <Button  Command="{Binding Timer.StopExtra}" Content="StopExtra"/>
+                    </StackPanel>
+                </Grid>
 
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="Time big rest"/>
-                    <TextBox Width="50" Text="{Binding Timer.TimeBigRestInMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                </StackPanel>
-                
-                <TextBlock Text="{Binding Timer.SelectedBigRest}"/>
-                <Button  Command="{Binding Timer.Start}" Content="Start"/>
-                <TextBlock Text="{Binding Timer.Labelwork}"/>
-                <TextBlock Text="{Binding Timer.LabelRest}"/>
-                <TextBlock FontSize="18" Text="{Binding Timer.TypeTimerLabel}"/>
-                <Button  Command="{Binding Timer.PauseCommand}" Content="Pause"/>
-                <Button  Command="{Binding Timer.PlayCommand}" Content="Play"/>
-                <TextBlock Text="Extra"/>
-                <TextBlock Text="{Binding Timer.ExtraTimeWorkLabel}"/>
-                <TextBlock Text="{Binding Timer.ExtraTimeRestLabel}"/>
+                <!--Property-->
+                <Grid x:Name="grid_Property" Height="50" VerticalAlignment="Bottom" Background="Bisque" Panel.ZIndex="3">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
 
-                <Button  Command="{Binding Timer.StopExtra}" Content="StopExtra"/>
-            </StackPanel>
-            
-            
+                    <!--Show Close Proprty-->
+                    <Grid>
+                        <Button x:Name="button_ShowProperty" Content="Sgow Property" HorizontalAlignment="Left">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <ei:ControlStoryboardAction Storyboard="{StaticResource ShowProperty}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Button>
+                        <Button x:Name="button_CloseProperty" Content="Close Property"  HorizontalAlignment="Left" Visibility="Collapsed">
+                            <i:Interaction.Triggers>
+                                <i:EventTrigger EventName="Click">
+                                    <ei:ControlStoryboardAction Storyboard="{StaticResource CloseProperty}" />
+                                </i:EventTrigger>
+                            </i:Interaction.Triggers>
+                        </Button>
+                    </Grid>
+
+                    <Grid x:Name="grid_PropertyMain" Grid.Row="1" Visibility="Collapsed">
+                        <TextBlock Text="Property" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    </Grid>
+                </Grid>
+            </Grid>
         </Grid>
     </Grid>
 

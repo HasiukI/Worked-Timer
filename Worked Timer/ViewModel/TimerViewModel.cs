@@ -338,11 +338,12 @@ namespace Worked_Timer.ViewModel
         {
            if( curentPosition % 2 == 0)
             {
-                ExtraTimeWorkLabel += _extraTimer.Interval;
+                ExtraTimeRestLabel += _extraTimer.Interval;
+               
             }
             else
             {
-                ExtraTimeRestLabel += _extraTimer.Interval;
+                ExtraTimeWorkLabel += _extraTimer.Interval;
             }
         }
 
