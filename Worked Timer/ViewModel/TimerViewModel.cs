@@ -1,19 +1,11 @@
 ﻿using GalaSoft.MvvmLight.Command;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
-using System.Timers;
-using System.Diagnostics;
-using System.Windows.Forms;
 using System.Collections.ObjectModel;
-using Worked_Timer.Model;
+using System.Diagnostics;
+using System.Timers;
+using System.Windows.Forms;
+using System.Windows.Input;
 using System.Windows.Threading;
+using Worked_Timer.Model;
 
 namespace Worked_Timer.ViewModel
 {
@@ -22,7 +14,7 @@ namespace Worked_Timer.ViewModel
         private readonly string[] TypesTimerLabel = { "Work", "Rest", "Big Rest" };
         private readonly string[] TypesMessage = { "It's time to get to work", "You should take a break", "Don't forget to eat" };
 
-        private int curentPosition;
+
 
         private System.Timers.Timer _curentTimer;
         private System.Timers.Timer _displayTimer;
@@ -34,6 +26,9 @@ namespace Worked_Timer.ViewModel
         public TimerViewModel()
         {
             Cycles = new ObservableCollection<MomentTimer>();
+            VisibilityPauseButton = true;
+            VisibilityPlayButton = false;
+
         }
 
         #region Property
@@ -132,6 +127,20 @@ namespace Worked_Timer.ViewModel
         #endregion
 
         #region View
+        private int _curentPosition;
+        public int CurentPosition
+        {
+            get => _curentPosition;
+            set
+            {
+                if(value != _curentPosition)
+                {
+                    _curentPosition = value;
+                    onPropertyChanged(nameof(CurentPosition));
+                }
+            }
+        }
+
         private string _typeTimerLabel;
         public string TypeTimerLabel
         {
@@ -172,29 +181,58 @@ namespace Worked_Timer.ViewModel
                 }
             }
         }
-        private string labelwork;
-        public string Labelwork
+        private string _labelTimer;
+        public string LabelTimer
         {
-            get => labelwork;
+            get => _labelTimer;
             set
             {
-                if (labelwork != value)
+                if (_labelTimer != value)
                 {
-                    labelwork = value;
-                    onPropertyChanged(nameof(Labelwork));
+                    _labelTimer = value;
+                    onPropertyChanged(nameof(LabelTimer));
                 }
             }
         }
-        private string labelRest;
-        public string LabelRest
+
+        private bool _visibilityPauseButton;
+        public bool VisibilityPauseButton
         {
-            get => labelRest;
+            get=>_visibilityPauseButton;
             set
             {
-                if (labelRest != value)
+                if(value!= _visibilityPauseButton)
                 {
-                    labelRest = value;
-                    onPropertyChanged(nameof(LabelRest));
+                    _visibilityPauseButton = value;
+                    onPropertyChanged(nameof(VisibilityPauseButton));
+                }
+            }
+        }
+
+        private bool _visibilityPlayButton;
+        public bool VisibilityPlayButton
+        {
+            get => _visibilityPlayButton;
+            set
+            {
+                if (value != _visibilityPlayButton)
+                {
+                    _visibilityPlayButton = value;
+                    onPropertyChanged(nameof(VisibilityPlayButton));
+                }
+            }
+        }
+
+        private int _valueProgress;
+        public int ValueProgress
+        {
+            get=> _valueProgress;
+            set
+            {
+                if( value!= _valueProgress)
+                {
+                    _valueProgress = value;
+                    onPropertyChanged(nameof(ValueProgress));
                 }
             }
         }
@@ -208,6 +246,8 @@ namespace Worked_Timer.ViewModel
         {
             get => new RelayCommand(() =>
             {
+                VisibilityPauseButton= false;
+                VisibilityPlayButton = true;
                 StopTimers();
             });
         }
@@ -216,6 +256,8 @@ namespace Worked_Timer.ViewModel
         {
             get => new RelayCommand(() =>
             {
+                VisibilityPauseButton = true;
+                VisibilityPlayButton = false;
                 StartTimers(false);
             });
         }
@@ -224,7 +266,7 @@ namespace Worked_Timer.ViewModel
         {
             get => new RelayCommand(() =>
             {
-                curentPosition = 0;
+                CurentPosition = 0;
 
                 _curentTimer = new System.Timers.Timer(int.Parse(TimeWorkInMinute) * 1000);
                 _curentTimer.Elapsed += InvokeWindow;
@@ -248,7 +290,7 @@ namespace Worked_Timer.ViewModel
             get => new RelayCommand(() =>
             {
                 _extraTimer.Stop();
-                MomentTimer curentMoment = Cycles.Where(s => s.Position == curentPosition).FirstOrDefault();
+                MomentTimer curentMoment = Cycles.Where(s => s.Position == CurentPosition).FirstOrDefault();
 
                 if (curentMoment == null)
                 {
@@ -289,9 +331,9 @@ namespace Worked_Timer.ViewModel
         {
             StopTimers();
 
-            curentPosition++;
+            CurentPosition++;
 
-            MomentTimer curentMoment = Cycles.Where(s => s.Position == curentPosition).FirstOrDefault();
+            MomentTimer curentMoment = Cycles.Where(s => s.Position == CurentPosition).FirstOrDefault();
 
             if (curentMoment == null)
             {
@@ -336,7 +378,7 @@ namespace Worked_Timer.ViewModel
 
         private void ExtraTimeTimer_Tick(object sender, EventArgs e)
         {
-           if( curentPosition % 2 == 0)
+           if( CurentPosition % 2 == 0)
             {
                 ExtraTimeRestLabel += _extraTimer.Interval;
                
@@ -354,9 +396,12 @@ namespace Worked_Timer.ViewModel
         /// <param name="e"></param>
         private void OnDisplayTimeElapsed(Object source, ElapsedEventArgs e)
         {
-            TimeSpan remaining = TimeSpan.FromSeconds(_curentTimer.Interval / 1000) - _stopwatch.Elapsed;
-            Labelwork = $"Залишилось {remaining.Minutes}.{remaining.Seconds}";
+            double totalSeconds = _curentTimer.Interval / 1000;
 
+            TimeSpan remaining = TimeSpan.FromSeconds(totalSeconds) - _stopwatch.Elapsed;
+            LabelTimer = $"{remaining.Minutes:D2}.{remaining.Seconds:D2}";
+
+            ValueProgress =(int)(((totalSeconds - remaining.TotalSeconds) / totalSeconds) * 100);
         }
 
         private void updateSeters()
