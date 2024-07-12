@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:Worked_Timer"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+    
     </Application.Resources>
 </Application>

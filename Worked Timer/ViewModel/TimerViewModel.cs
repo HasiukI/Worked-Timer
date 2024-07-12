@@ -1,21 +1,25 @@
 ﻿using GalaSoft.MvvmLight.Command;
+using Newtonsoft.Json.Bson;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
+using System.Security.RightsManagement;
 using System.Timers;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Worked_Timer.Model;
+using Worked_Timer.Pages;
 
 namespace Worked_Timer.ViewModel
 {
-    class TimerViewModel :ViewModelBase
+    public class TimerViewModel :ViewModelBase
     {
-        private readonly string[] TypesTimerLabel = { "Work", "Rest", "Big Rest" };
-        private readonly string[] TypesMessage = { "It's time to get to work", "You should take a break", "Don't forget to eat" };
-
-
-
+        private readonly string[] TypesImageForSets = { "pack://application:,,,/images/Work.svg", "pack://application:,,,/images/Break.svg", "pack://application:,,,/images/Lunch.svg" };
+        private readonly string[] TypesImageForMain = { "pack://application:,,,/images/workView.png", "pack://application:,,,/images/breakView.png", "pack://application:,,,/images/lunchView.png", "pack://application:,,,/images/warningView.png", "pack://application:,,,/images/Welldone.png" };
+      
         private System.Timers.Timer _curentTimer;
         private System.Timers.Timer _displayTimer;
         private DispatcherTimer _extraTimer;
@@ -23,110 +27,218 @@ namespace Worked_Timer.ViewModel
 
         public ObservableCollection<MomentTimer> Cycles { get; }
 
-        public TimerViewModel()
-        {
-            Cycles = new ObservableCollection<MomentTimer>();
-            VisibilityPauseButton = true;
-            VisibilityPlayButton = false;
+        private double _timeToLeftPause=0;
+        private double _timeToGlobalPause = 0;
 
+        private AnimationViewModel _animationViewModel;
+        private MessageViewModel _message;
+        private PropertyViewModel _property;
+        private Configuration _config;
+        private WindowViewModel _window;
+
+        public TimerViewModel(WindowViewModel window,Configuration config, AnimationViewModel animationViewModel, MessageViewModel message, PropertyViewModel property)
+        {
+            _property = property;
+            _config = config;
+            _animationViewModel = animationViewModel;
+            _message = message;
+            _window = window;
+
+            Cycles = new ObservableCollection<MomentTimer>();
+            IsVisibleLastProperty();
+            VisibilityButtonsPlayPause = true;
+            VisibilityButtonsPlay = true;
         }
 
         #region Property
 
         #region Seters
+
+        private string _totalMinutes;
+        public string TotalMinutes { 
+            get=>_totalMinutes;
+            set { 
+                if(value != _totalMinutes)
+                {
+                    _totalMinutes = value;
+                    onPropertyChanged(nameof(TotalMinutes));
+                }
+               
+            }
+        }
+
+        public string TimeWorkInMinuteExeption { get; set; }
+        public bool TimeWorkInMinuteVisibility { get; set; }
         private string _timeWorkInMinute;
         public string TimeWorkInMinute
         {
             get => _timeWorkInMinute;
             set
             {
-                if (_timeWorkInMinute != value)
-                {
-                    if (value.Length <= 3)
-                    {
-                        if (value.All(char.IsDigit))
-                        {
-                            _timeWorkInMinute = value;
-                            onPropertyChanged(nameof(TimeWorkInMinute));
-                        }
-                    }
+                var rez = IsCorectField(_timeWorkInMinute, value, false);
 
+                if(rez == ExeptionValue.ok)
+                {
+                    _timeWorkInMinute = value;
+                    onPropertyChanged(nameof(TimeWorkInMinute));
+
+                    TimeWorkInMinuteExeption = String.Empty;
+                    TimeWorkInMinuteVisibility = false;
+                    onPropertyChanged(nameof(TimeWorkInMinuteExeption));
+                    onPropertyChanged(nameof(TimeWorkInMinuteVisibility));
                 }
+                else
+                {
+                    TimeWorkInMinuteExeption = _property.GetExeption(rez);
+                    TimeWorkInMinuteVisibility = true;
+                    onPropertyChanged(nameof(TimeWorkInMinuteExeption));
+                    onPropertyChanged(nameof(TimeWorkInMinuteVisibility));
+                }
+
+                SetTotalTime();
+               
             }
         }
 
+        public string TimeBreakInMinutesExeption { get; set; }
+        public bool TimeBreakInMinutesVisibility { get; set; }
         private string _timeBreakInMinutes;
         public string TimeBreakInMinutes
         {
             get => _timeBreakInMinutes;
             set
             {
-                if (_timeBreakInMinutes != value)
+                var rez = IsCorectField(_timeWorkInMinute, value, false);
+
+                if (rez == ExeptionValue.ok)
                 {
-                    if (value.Length <= 3)
-                    {
-                        if (value.All(char.IsDigit))
-                        {
-                            _timeBreakInMinutes = value;
-                            onPropertyChanged(nameof(TimeBreakInMinutes));
-                        }
-                    }
+                    _timeBreakInMinutes = value;
+                    onPropertyChanged(nameof(TimeBreakInMinutes));
+
+                    TimeBreakInMinutesExeption = String.Empty;
+                    TimeBreakInMinutesVisibility = false;
+                    onPropertyChanged(nameof(TimeBreakInMinutesExeption));
+                    onPropertyChanged(nameof(TimeBreakInMinutesVisibility));
                 }
+                else
+                {
+                    TimeBreakInMinutesExeption = _property.GetExeption(rez);
+                    TimeBreakInMinutesVisibility = true;
+                    onPropertyChanged(nameof(TimeBreakInMinutesExeption));
+                    onPropertyChanged(nameof(TimeBreakInMinutesVisibility));
+                }
+
+                SetTotalTime();
+
+               
             }
         }
 
+        public string TimeBigRestInMinutesExeption { get; set; }
+        public bool TimeBigRestInMinutesVisibility { get; set; }
         private string _timeBigRestInMinutes;
         public string TimeBigRestInMinutes
         {
             get => _timeBigRestInMinutes;
             set
             {
-                if (_timeBigRestInMinutes != value)
+                var rez = IsCorectField(_timeBigRestInMinutes, value, false);
+
+                if (rez == ExeptionValue.ok)
                 {
-                    if (value.Length <= 3)
-                    {
-                        if (value.All(char.IsDigit))
-                        {
-                            _timeBigRestInMinutes = value;
-                            onPropertyChanged(nameof(TimeBigRestInMinutes));
-                        }
-                    }
+                    _timeBigRestInMinutes = value;
+                    onPropertyChanged(nameof(TimeBigRestInMinutes));
+
+                    TimeBigRestInMinutesExeption = String.Empty;
+                    TimeBigRestInMinutesVisibility = false;
+                    onPropertyChanged(nameof(TimeBigRestInMinutesExeption));
+                    onPropertyChanged(nameof(TimeBigRestInMinutesVisibility));
                 }
+                else
+                {
+                    TimeBigRestInMinutesExeption = _property.GetExeption(rez);
+                    TimeBigRestInMinutesVisibility = true;
+                    onPropertyChanged(nameof(TimeBigRestInMinutesExeption));
+                    onPropertyChanged(nameof(TimeBigRestInMinutesVisibility));
+                }
+
+                if (value != string.Empty)
+                {
+                    UpdateTimeInList();
+                }
+                SetTotalTime();
+             
             }
         }
 
-        private int _countCycles;
-        public int CountCycles
+        public string CountCyclesExeption { get; set; }
+        public bool CountCyclesVisibility { get; set; }
+        private string _countCycles;
+        public string CountCycles
         {
             get => _countCycles;
             set
             {
-                if (value != _countCycles)
+                var rez = IsCorectField(_timeWorkInMinute, value, true);
+
+                if (rez == ExeptionValue.ok)
                 {
                     _countCycles = value;
                     onPropertyChanged(nameof(CountCycles));
+
+                    CountCyclesExeption = String.Empty;
+                    CountCyclesVisibility = false;
+                    onPropertyChanged(nameof(CountCyclesExeption));
+                    onPropertyChanged(nameof(CountCyclesVisibility));
+                }
+                else
+                {
+                    CountCyclesExeption = _property.GetExeption(rez);
+                    CountCyclesVisibility = true;
+                    onPropertyChanged(nameof(CountCyclesExeption));
+                    onPropertyChanged(nameof(CountCyclesVisibility));
+                }
+
+                if (value != string.Empty)
+                {
                     updateSeters();
                 }
+                SetTotalTime();
+
             }
         }
 
-        private int _SelectedBigRest;
-        public int SelectedBigRest
-        {
-            get => _SelectedBigRest;
-            set
-            {
-                if (value != _SelectedBigRest && value % 2 != 0)
-                {
-                    _SelectedBigRest = value;
-                    onPropertyChanged(nameof(SelectedBigRest));
-                    updateSeters();
-                }
-            }
-        }
         #endregion
 
         #region View
+
+        private TimeSpan _extraTimerLabel;
+        public TimeSpan ExtraTimeLabel
+        {
+            get => _extraTimerLabel;
+            set
+            {
+                if (value == _extraTimerLabel) return;
+
+                _extraTimerLabel = value;
+                onPropertyChanged(nameof(ExtraTimeLabel));
+            }
+        }
+
+        private string _nameImage;
+        public string NameImage
+        {
+            get => _nameImage;
+            set
+            {
+                if (value != _nameImage)
+                {
+                    _nameImage = value;
+                    onPropertyChanged(nameof(NameImage));
+                }
+            }
+        }
+
         private int _curentPosition;
         public int CurentPosition
         {
@@ -141,46 +253,6 @@ namespace Worked_Timer.ViewModel
             }
         }
 
-        private string _typeTimerLabel;
-        public string TypeTimerLabel
-        {
-            get => _typeTimerLabel;
-            set
-            {
-                if (_typeTimerLabel != value)
-                {
-                    _typeTimerLabel = value;
-                    onPropertyChanged(nameof(TypeTimerLabel));
-                }
-            }
-        }
-
-        private TimeSpan _extraTimeWorkLabel;
-        public TimeSpan ExtraTimeWorkLabel
-        {
-            get => _extraTimeWorkLabel;
-            set
-            {
-                if (_extraTimeWorkLabel != value)
-                {
-                    _extraTimeWorkLabel = value;
-                    onPropertyChanged(nameof(ExtraTimeWorkLabel));
-                }
-            }
-        }
-        private TimeSpan _extraTimeRestLabel;
-        public TimeSpan ExtraTimeRestLabel
-        {
-            get => _extraTimeRestLabel;
-            set
-            {
-                if (_extraTimeRestLabel != value)
-                {
-                    _extraTimeRestLabel = value;
-                    onPropertyChanged(nameof(ExtraTimeRestLabel));
-                }
-            }
-        }
         private string _labelTimer;
         public string LabelTimer
         {
@@ -194,35 +266,7 @@ namespace Worked_Timer.ViewModel
                 }
             }
         }
-
-        private bool _visibilityPauseButton;
-        public bool VisibilityPauseButton
-        {
-            get=>_visibilityPauseButton;
-            set
-            {
-                if(value!= _visibilityPauseButton)
-                {
-                    _visibilityPauseButton = value;
-                    onPropertyChanged(nameof(VisibilityPauseButton));
-                }
-            }
-        }
-
-        private bool _visibilityPlayButton;
-        public bool VisibilityPlayButton
-        {
-            get => _visibilityPlayButton;
-            set
-            {
-                if (value != _visibilityPlayButton)
-                {
-                    _visibilityPlayButton = value;
-                    onPropertyChanged(nameof(VisibilityPlayButton));
-                }
-            }
-        }
-
+      
         private int _valueProgress;
         public int ValueProgress
         {
@@ -236,39 +280,249 @@ namespace Worked_Timer.ViewModel
                 }
             }
         }
+
+        private TimeSpan _extraTimeWork;
+        private TimeSpan _extraTimeBreak;
+
+        private bool _visibilitySetDefault;
+        public bool VisibilitySetDefault
+        {
+            get => _visibilitySetDefault;
+            set
+            {
+                if (value != _visibilitySetDefault)
+                {
+                    _visibilitySetDefault = value;
+                    onPropertyChanged(nameof(VisibilitySetDefault));
+                }
+            }
+        }
+
+        private bool _visibilitySetDefaultInfo;
+        public bool VisibilitySetDefaultInfo
+        {
+            get => _visibilitySetDefaultInfo;
+            set
+            {
+                if (value != _visibilitySetDefaultInfo)
+                {
+                    _visibilitySetDefaultInfo = value;
+                    onPropertyChanged(nameof(VisibilitySetDefaultInfo));
+                }
+            }
+        }
+        private bool _visibilityButtonsPlayPause;
+        public bool VisibilityButtonsPlayPause
+        {
+            get => _visibilityButtonsPlayPause;
+            set
+            {
+                if (value != _visibilityButtonsPlayPause)
+                {
+                    _visibilityButtonsPlayPause = value;
+                    onPropertyChanged(nameof(VisibilityButtonsPlayPause));
+                }
+            }
+        }
+        private bool _visibilityButtonsPlay;
+        public bool VisibilityButtonsPlay
+        {
+            get => _visibilityButtonsPlay;
+            set
+            {
+                if (value != _visibilityButtonsPlay)
+                {
+                    _visibilityButtonsPlay = value;
+                    onPropertyChanged(nameof(VisibilityButtonsPlay));
+                }
+            }
+        }
+        private bool _visibilityButtonsPause;
+        public bool VisibilityButtonsPause
+        {
+            get => _visibilityButtonsPause;
+            set
+            {
+                if (value != _visibilityButtonsPause)
+                {
+                    _visibilityButtonsPause = value;
+                    onPropertyChanged(nameof(VisibilityButtonsPause));
+                }
+            }
+        }
         #endregion
 
         #endregion
-
 
         #region Command
+
+        /// <summary>
+        /// processes for life to choose a lunch break
+        /// </summary>
+        private ICommand _setLunchCommand;
+        public ICommand SetBigRest
+        {
+            get
+            {
+                if(_setLunchCommand == null)
+                {
+                    _setLunchCommand = new RelayCommand<object>(param =>
+                    {
+                        if (param is MomentTimer)
+                        {
+                            if ((param as MomentTimer).ActionOfTime == ActionOfTime.Work)
+                            {
+                                return;
+                            }
+
+                            var oldBigRestCycle = Cycles.Where(c => c.ActionOfTime == ActionOfTime.BigRest).FirstOrDefault();
+
+                            if (oldBigRestCycle != null)
+                            {
+                                oldBigRestCycle.NameImage = _property.CurentImageSourse.Sourse["Break"];
+                                oldBigRestCycle.NameImageForMain = TypesImageForMain[1];
+                                oldBigRestCycle.ActionOfTime = ActionOfTime.Rest;
+                            }
+
+                            if (oldBigRestCycle != (param as MomentTimer))
+                            {
+                                (param as MomentTimer).ActionOfTime = ActionOfTime.BigRest;
+                                (param as MomentTimer).NameImage = _property.CurentImageSourse.Sourse["Lunch"];
+                                (param as MomentTimer).NameImageForMain = TypesImageForMain[2];
+                                _animationViewModel.ChangeLunchDrop(false);
+
+                            }
+                            else
+                            {
+                                _animationViewModel.ChangeLunchDrop(true);
+                                TimeBigRestInMinutes = String.Empty;
+                                UpdateTimeInList();
+                            }
+                        }
+                    });
+                }
+                return _setLunchCommand;
+            }
+
+            //get => new RelayCommand<object>(param =>
+            //{
+            //    if(param is MomentTimer)
+            //    {
+            //        if((param as MomentTimer).ActionOfTime == ActionOfTime.Work)
+            //        {
+            //            return;
+            //        }
+
+            //        var oldBigRestCycle = Cycles.Where(c => c.ActionOfTime == ActionOfTime.BigRest).FirstOrDefault();
+
+            //        if (oldBigRestCycle != null )
+            //        {
+            //            oldBigRestCycle.NameImage = _property.CurentImageSourse.Sourse["Break"];
+            //            oldBigRestCycle.NameImageForMain = TypesImageForMain[1];
+            //            oldBigRestCycle.ActionOfTime = ActionOfTime.Rest;
+            //            //oldBigRestCycle.Message = TypesMessage[1];
+            //        }
+
+            //        if(oldBigRestCycle != (param as MomentTimer))
+            //        {
+            //            (param as MomentTimer).ActionOfTime = ActionOfTime.BigRest;
+            //            //(param as MomentTimer).Message = TypesMessage[2];
+            //            (param as MomentTimer).NameImage = _property.CurentImageSourse.Sourse["Lunch"];
+            //            (param as MomentTimer).NameImageForMain = TypesImageForMain[2];
+            //            _animationViewModel.ChangeLunchDrop(false);
+                        
+            //        }
+            //        else
+            //        {
+            //            _animationViewModel.ChangeLunchDrop(true);
+            //            TimeBigRestInMinutes = String.Empty;
+            //            UpdateTimeInList();
+            //        }
+            //    }
+            //});
+        }
+
+        public ICommand DestroySets
+        {
+            get => new RelayCommand(() =>
+            {
+                SetToDefaultPropertyAndStoppedTimer();
+            });
+        }
+
+        /// <summary>
+        /// Stops time
+        /// </summary>
+        private ICommand _pauseCommand;
         public ICommand PauseCommand
         {
-            get => new RelayCommand(() =>
+            get
             {
-                VisibilityPauseButton= false;
-                VisibilityPlayButton = true;
-                StopTimers();
-            });
+                if( _pauseCommand == null)
+                {
+                    _pauseCommand = new RelayCommand(() =>
+                    {
+
+                        if (_timeToLeftPause == 0)
+                        {
+                            MomentTimer curentMoment = Cycles.Where(s => s.Position == CurentPosition).FirstOrDefault();
+                            _timeToGlobalPause = GetSecondsOnMomentTime(curentMoment);
+                            _timeToLeftPause = _timeToGlobalPause - _stopwatch.ElapsedMilliseconds;
+                        }
+                        else
+                        {
+                            _timeToLeftPause -= _stopwatch.ElapsedMilliseconds;
+                        }
+
+
+                        StopTimers();
+                        VisibilityButtonsPause = true;
+                        VisibilityButtonsPlay = false;
+                    });
+                }
+                return _pauseCommand;
+            }
+            
         }
 
+        /// <summary>
+        /// Extends time
+        /// </summary>
+        private ICommand _playCommand;
         public ICommand PlayCommand
         {
-            get => new RelayCommand(() =>
+            get
             {
-                VisibilityPauseButton = true;
-                VisibilityPlayButton = false;
-                StartTimers(false);
-            });
+                if(_playCommand == null)
+                {
+                    _playCommand = new RelayCommand(() =>
+                    {
+                        if (_timeToLeftPause != 0)
+                        {
+                            _curentTimer = new System.Timers.Timer(_timeToLeftPause);
+                            _curentTimer.Elapsed += InvokeWindow;
+
+                        }
+                        StartTimers();
+                        VisibilityButtonsPause = false;
+                        VisibilityButtonsPlay = true;
+                    });
+                }
+                return _playCommand;
+            }
         }
 
+        /// <summary>
+        /// Starts a timer with new values ​​and saves them
+        /// </summary>
         public ICommand Start
         {
             get => new RelayCommand(() =>
             {
-                CurentPosition = 0;
+                CurentPosition = 1;
+               
 
-                _curentTimer = new System.Timers.Timer(int.Parse(TimeWorkInMinute) * 1000);
+                _curentTimer = new System.Timers.Timer(int.Parse(TimeWorkInMinute) * 60 * 1000);
                 _curentTimer.Elapsed += InvokeWindow;
 
                 _displayTimer = new System.Timers.Timer();
@@ -277,18 +531,79 @@ namespace Worked_Timer.ViewModel
                 _stopwatch = new Stopwatch();
 
                 _extraTimer = new DispatcherTimer();
-                _extraTimer.Interval = TimeSpan.FromSeconds(1); // Відстежує кожну секунду
+                _extraTimer.Interval = TimeSpan.FromSeconds(1);
                 _extraTimer.Tick += ExtraTimeTimer_Tick;
+                _extraTimeBreak = new TimeSpan(0,0,0);
+                _extraTimeWork = new TimeSpan(0,0,0);
 
-                StartTimers(false);
-                     
+                var appconfig = new AppConfig() { PropertyWork = TimeWorkInMinute, PropertyBreak = TimeBreakInMinutes, PropertyCycle = CountCycles, PropertyTotalTime =TotalMinutes };
+
+                var lunch = Cycles.Where(l => l.ActionOfTime == ActionOfTime.BigRest).FirstOrDefault();
+
+                
+
+                if (lunch != null)
+                {
+                    if (String.IsNullOrEmpty(TimeBigRestInMinutes))
+                    {
+                        lunch.NameImage = TypesImageForSets[1];
+                        lunch.NameImageForMain = TypesImageForMain[1];
+                        lunch.ActionOfTime = ActionOfTime.Rest;
+                        //lunch.Message = TypesMessage[1];
+
+                    }
+                    else
+                    {
+                        appconfig.PropertyPositionLunch = lunch.Position.ToString();
+                        appconfig.PropertyLunch = TimeBigRestInMinutes;
+                    }
+                }
+                else
+                {
+                    appconfig.PropertyPositionLunch = "0";
+                    appconfig.PropertyLunch = "0";
+                }
+               
+                
+               Task.Run(()=> _config.SetParametr(appconfig));
+
+                NameImage = TypesImageForMain[0];
+                StartTimers();
             });
         }
 
+        /// <summary>
+        /// Starts the timer with the old values
+        /// </summary>
+        public ICommand SetPastPropertyDefault
+        {
+            get => new RelayCommand(() =>
+            {
+                TimeWorkInMinute = _config.Config.PropertyWork;
+                TimeBreakInMinutes = _config.Config.PropertyBreak;
+                CountCycles = _config.Config.PropertyCycle;
+
+                if(_config.Config.PropertyLunch !="0" && _config.Config.PropertyPositionLunch != "0")
+                {
+                    var lunch = Cycles.Single(l => l.Position == int.Parse(_config.Config.PropertyPositionLunch));
+
+                    lunch.ActionOfTime = ActionOfTime.BigRest;
+                    lunch.NameImage = TypesImageForSets[2];
+                    lunch.NameImageForMain = TypesImageForMain[2];
+                }
+
+                Start.Execute(this);
+            });
+        }
+
+        /// <summary>
+        /// Stops overtime
+        /// </summary>
         public ICommand StopExtra
         {
             get => new RelayCommand(() =>
             {
+                VisibilityButtonsPlayPause = true;
                 _extraTimer.Stop();
                 MomentTimer curentMoment = Cycles.Where(s => s.Position == CurentPosition).FirstOrDefault();
 
@@ -297,13 +612,39 @@ namespace Worked_Timer.ViewModel
                     System.Windows.Forms.MessageBox.Show("Усe");
                     return;
                 }
-
+               
+                _animationViewModel.ChangeExtraAndMainInfo(true);
                 StartNextTimer(curentMoment);
             });
         }
         #endregion
 
         #region Method
+        private void SetToDefaultPropertyAndStoppedTimer()
+        {
+            if (_extraTimer.IsEnabled)
+            {
+                _extraTimer.Stop();
+            }
+
+            _curentTimer.Stop();
+            _curentTimer.Dispose();
+
+            _displayTimer.Stop();
+            _displayTimer.Dispose();
+
+            _stopwatch.Stop();
+            _stopwatch.Reset();
+
+            TimeBigRestInMinutes = string.Empty;
+            TimeBreakInMinutes = string.Empty;
+            TimeWorkInMinute = string.Empty;
+
+            CountCycles = string.Empty;
+            CurentPosition = 0;
+
+            Cycles.Clear();
+        }
 
         private void StopTimers()
         {
@@ -311,15 +652,12 @@ namespace Worked_Timer.ViewModel
             _curentTimer.Stop();
             _displayTimer.Stop();
         }
-        private void StartTimers(bool IsRestart)
-        {
-            _curentTimer.Start();
-            _displayTimer.Start();
 
-            if(IsRestart)
-                _stopwatch.Restart();
-            else
-                _stopwatch.Start();
+        private void StartTimers()
+        {
+            _displayTimer.Start();
+            _curentTimer.Start();
+            _stopwatch.Restart();    
         }
 
         /// <summary>
@@ -335,57 +673,123 @@ namespace Worked_Timer.ViewModel
 
             MomentTimer curentMoment = Cycles.Where(s => s.Position == CurentPosition).FirstOrDefault();
 
+
+
             if (curentMoment == null)
             {
-                System.Windows.Forms.MessageBox.Show("Усe");
+                _message.IsLast = true;
+                _message.WorkTime = (TimeSpan.FromMinutes(double.Parse(TimeWorkInMinute) * double.Parse(CountCycles)) + _extraTimeWork).ToString();
+                _message.BreakTime = (TimeSpan.FromMinutes(double.Parse(TimeBreakInMinutes) * double.Parse(CountCycles)) + _extraTimeBreak).ToString();
+                _message.Moment = curentMoment = new MomentTimer() { NameImageForMain = TypesImageForMain[4] };
+                _window.ShowWindowMessage();
+
+                _window.StopTimerCommand.Execute(curentMoment);
+                SetToDefaultPropertyAndStoppedTimer();
                 return;
             }
 
-            var rez = System.Windows.Forms.MessageBox.Show(curentMoment.Message, "Перерва", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
-            if (rez == DialogResult.Yes)
+            _message.Moment = curentMoment;
+
+            //App.Current.Dispatcher.Invoke(() =>
+            //{
+
+            _window.ShowWindowMessage();
+           // if (_window.ShowWindowMessage() == true)
+            if (_message.IsNext == true)
             {
                 StartNextTimer(curentMoment);
             }
             else
             {
+                _animationViewModel.ChangeExtraAndMainInfo(false);
+                VisibilityButtonsPlayPause = false;
+                ExtraTimeLabel = new TimeSpan(0, 0, 0);
+                NameImage = TypesImageForMain[3];
+
                 _extraTimer.Start();
             }
+            //MessageWindow message = new MessageWindow() { Message = ms };
+            //if (message.ShowDialog() == true)
+            //{
+            //    
+            //}
+            //else
+            //{
+            //    _animationViewModel.ChangeExtraAndMainInfo(false);
+            //    VisibilityButtonsPlayPause = false;
+            //    ExtraTimeLabel = new TimeSpan(0, 0, 0);
+            //    _extraTimer.Start();
+
+            //    NameImage = TypesImageForMain[3];
+            //}
+            //});
+            //MessageWindow message = new MessageWindow() { Message = ms};
+
+            //if (message.ShowDialog() == true)
+            //{
+            //    StartNextTimer(curentMoment);
+            //}
+            //else
+            //{
+            //    _animationViewModel.ChangeExtraAndMainInfo(false);
+            //    _extraTimer.Start();
+            //    NameImage = TypesImageForMain[3];
+            //}
 
         }
 
+        /// <summary>
+        /// Starts a new timer
+        /// </summary>
+        /// <param name="curentMoment"></param>
         private void StartNextTimer(MomentTimer curentMoment) {
+
+            _timeToLeftPause = 0;
+            _timeToGlobalPause = 0;
+
+            NameImage = curentMoment.NameImageForMain;
+            _curentTimer = new System.Timers.Timer(GetSecondsOnMomentTime(curentMoment));
+            _curentTimer.Elapsed += InvokeWindow;
+
+            StartTimers();
+        }
+
+        /// <summary>
+        /// Returns the time for the next timer
+        /// </summary>
+        /// <param name="curentMoment"></param>
+        /// <returns></returns>
+        private double GetSecondsOnMomentTime(MomentTimer curentMoment)
+        {
             switch (curentMoment.ActionOfTime)
             {
                 case ActionOfTime.Work:
-                    _curentTimer = new System.Timers.Timer(int.Parse(TimeWorkInMinute) * 1000);
-                    TypeTimerLabel = TypesTimerLabel[0];
-                    break;
+                    return int.Parse(TimeWorkInMinute) * 60 * 1000;
                 case ActionOfTime.Rest:
-                    _curentTimer = new System.Timers.Timer(int.Parse(TimeBreakInMinutes) * 1000);
-                    TypeTimerLabel = TypesTimerLabel[1];
-                    break;
+                    return int.Parse(TimeBreakInMinutes) * 60 * 1000;
                 case ActionOfTime.BigRest:
-                    _curentTimer = new System.Timers.Timer(int.Parse(TimeBigRestInMinutes) * 1000);
-                    TypeTimerLabel = TypesTimerLabel[2];
-                    break;
+                    return int.Parse(TimeBigRestInMinutes) * 60 * 1000;
             }
-
-            _curentTimer.Elapsed += InvokeWindow;
-
-            StartTimers(true);
+            return 0;
         }
 
+        /// <summary>
+        /// Includes an additional timer
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void ExtraTimeTimer_Tick(object sender, EventArgs e)
         {
+            ExtraTimeLabel += _extraTimer.Interval;
+
            if( CurentPosition % 2 == 0)
             {
-                ExtraTimeRestLabel += _extraTimer.Interval;
-               
+                _extraTimeWork += _extraTimer.Interval;
             }
             else
             {
-                ExtraTimeWorkLabel += _extraTimer.Interval;
+                _extraTimeBreak += _extraTimer.Interval; 
             }
         }
 
@@ -396,37 +800,200 @@ namespace Worked_Timer.ViewModel
         /// <param name="e"></param>
         private void OnDisplayTimeElapsed(Object source, ElapsedEventArgs e)
         {
-            double totalSeconds = _curentTimer.Interval / 1000;
+            double totalSeconds;
+            TimeSpan remaining;
 
-            TimeSpan remaining = TimeSpan.FromSeconds(totalSeconds) - _stopwatch.Elapsed;
-            LabelTimer = $"{remaining.Minutes:D2}.{remaining.Seconds:D2}";
+            if (_timeToLeftPause != 0)
+            {
+                totalSeconds = _timeToGlobalPause / 1000;
+                remaining = TimeSpan.FromSeconds(totalSeconds) - (TimeSpan.FromSeconds(totalSeconds - (_timeToLeftPause / 1000)) + _stopwatch.Elapsed);
+            }
+            else
+            {
+                totalSeconds = _curentTimer.Interval / 1000;
+                remaining = TimeSpan.FromSeconds(totalSeconds) - _stopwatch.Elapsed;
+            }
 
+            //LabelTimer = $"{remaining.Minutes:D2}:{remaining.Seconds:D2}";
+            LabelTimer = remaining.ToString(@"hh\:mm\:ss");
             ValueProgress =(int)(((totalSeconds - remaining.TotalSeconds) / totalSeconds) * 100);
         }
 
+        /// <summary>
+        /// Updates the data in the List
+        /// </summary>
         private void updateSeters()
         {
             Cycles.Clear();
-            for (int i = 0; i < CountCycles * 2 && i + 1 != CountCycles * 2; i++)
+            for (int i = 0; i < int.Parse(CountCycles) * 2 && i + 1 != int.Parse(CountCycles) * 2; i++)
             {
                 if (i % 2 == 0)
                 {
-                    Cycles.Add(new MomentTimer() { Position = i, ActionOfTime = ActionOfTime.Work, Message = TypesMessage[0] });
+                    Cycles.Add(new MomentTimer() { Position = i + 1, ActionOfTime = ActionOfTime.Work, NameImage = _property.CurentImageSourse.Sourse["Work"], NameImageForMain = TypesImageForMain[0] });
                 }
                 else
                 {
-                    if (SelectedBigRest == i)
-                        Cycles.Add(new MomentTimer() { Position = i, ActionOfTime = ActionOfTime.BigRest, Message = TypesMessage[2] });
-                    else
-                        Cycles.Add(new MomentTimer() { Position = i, ActionOfTime = ActionOfTime.Rest, Message = TypesMessage[1] });
+                    Cycles.Add(new MomentTimer() { Position = i + 1 , ActionOfTime = ActionOfTime.Rest, NameImage = _property.CurentImageSourse.Sourse["Break"], NameImageForMain = TypesImageForMain[1] });
                 }
 
 
             }
+            UpdateTimeInList();
         }
+
+        /// <summary>
+        /// Sets the time interval value in the array
+        /// </summary>
+        private void UpdateTimeInList()
+        {
+            TimeSpan startTime= new TimeSpan(0,0,0);
+            TimeSpan endTime = TimeSpan.FromMinutes(double.Parse(TimeWorkInMinute));
+            Cycles[0].IntervalTime = $"{startTime.ToString(@"hh\:mm")}/{endTime.ToString(@"hh\:mm")}";
+
+            startTime = endTime;
+
+            for (int i=1; i < Cycles.Count; i++)
+            {
+                TimeSpan temp = startTime;
+
+                switch(Cycles[i].ActionOfTime)
+                {
+                    case ActionOfTime.Work:
+
+                        endTime = temp.Add(TimeSpan.FromMinutes(double.Parse(TimeWorkInMinute)));
+                        break;
+                       case ActionOfTime.Rest:
+                        endTime = temp.Add(TimeSpan.FromMinutes(double.Parse(TimeBreakInMinutes)));
+                        break;
+                    case ActionOfTime.BigRest:
+                        endTime = temp.Add(TimeSpan.FromMinutes(double.Parse(TimeBigRestInMinutes)));
+                        break;
+                }
+
+                Cycles[i].IntervalTime = $"{startTime.ToString(@"hh\:mm")}/{endTime.ToString(@"hh\:mm")}";
+                startTime = endTime;
+            }
+        }
+
+        /// <summary>
+        /// Checks whether the information is entered correctly in the main fields
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckIsFilledMainFields()
+        {
+            if (!String.IsNullOrEmpty(CountCycles) &&
+                !String.IsNullOrEmpty(TimeWorkInMinute) &&
+                !String.IsNullOrEmpty(TimeBreakInMinutes))
+            {
+                _animationViewModel.SetterIsFilledMainFields = true;
+                return true;
+            }
+
+            _animationViewModel.SetterIsFilledMainFields = false;
+            return false;
+        }
+
+        /// <summary>
+        /// Calculates the total time
+        /// </summary>
+        public void SetTotalTime()
+        {
+            if (CheckIsFilledMainFields())
+            {
+                int temp = int.Parse(TimeWorkInMinute) * int.Parse(CountCycles);
+
+                if (!String.IsNullOrEmpty(TimeBigRestInMinutes))
+                {
+                    temp += int.Parse(TimeBigRestInMinutes);
+                    temp += int.Parse(TimeBreakInMinutes) * (int.Parse(CountCycles) - 2);
+                }
+                else
+                {
+                    temp += int.Parse(TimeBreakInMinutes) * (int.Parse(CountCycles) - 1);
+                }
+
+                 TotalMinutes = $"{temp / 60}:{(temp % 60)}";
+              
+            }
+        }
+
+        /// <summary>
+        /// Checks a specific non-field for correctness of input
+        /// </summary>
+        /// <param name="output"></param>
+        /// <param name="value"></param>
+        /// <param name="isCountCycle"></param>
+        /// <returns>returns the type of incorrect input</returns>
+        private ExeptionValue IsCorectField(string output,string value, bool isCountCycle)
+        {
+
+            if (isCountCycle)
+            {
+                if (value.Length > 2)
+                {
+                    return ExeptionValue.toLong;
+                }
+
+                if (!String.IsNullOrEmpty(value))
+                {
+                    if (int.Parse(value) > 15)
+                    {
+                        return ExeptionValue.Max15;
+                    }
+                }
+
+            }
+            else
+            {
+                if (value.Length > 3)
+                {
+                    return ExeptionValue.toLong;
+                }
+               
+            }
+          
+            if (!value.All(char.IsDigit))
+            {
+                return ExeptionValue.noteANumber;
+            }
+            if(value == "0")
+            {
+                return ExeptionValue.startZero;
+            }
+
+            return ExeptionValue.ok;    
+        }
+
+        /// <summary>
+        /// Enables the visibility of the following values
+        /// </summary>
+        private void IsVisibleLastProperty()
+        {
+            if (!String.IsNullOrEmpty(_config.Config.PropertyCycle) &&
+                !String.IsNullOrEmpty(_config.Config.PropertyWork) &&
+                !String.IsNullOrEmpty(_config.Config.PropertyBreak))
+            {
+                VisibilitySetDefault = true;
+                VisibilitySetDefaultInfo = false;
+            }
+            else
+            {
+                VisibilitySetDefault=false;
+                VisibilitySetDefaultInfo = true;
+            }
+        }
+        #endregion
     }
-    #endregion
 
+    public enum ExeptionValue
+    {
+       
+        toLong,
+        noteANumber,
+        startZero,
+        Max15,
+        ok,
+        
 
-
+    }
 }

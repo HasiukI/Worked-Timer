@@ -4,492 +4,90 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
         xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
         xmlns:tb="http://www.hardcodet.net/taskbar"
         xmlns:local="clr-namespace:Worked_Timer.ViewModel"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="320"
+        Title="MainWindow" Height="380" Width="360"
         ShowInTaskbar="False"
         WindowStyle="None"
+        ResizeMode="NoResize" 
+        AllowsTransparency="True" 
+        Background="Transparent" 
         Top="{Binding Window.TopPosition}" 
         Left="{Binding Window.LeftPosition}"
         >
     <Window.Resources>
-        <Storyboard x:Key="ShowSets">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="grid_Sets" Storyboard.TargetProperty="(FrameworkElement.Height)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="40"/>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.5000000" Value="350"/>
-            </DoubleAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_ShowSets" Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Collapsed}"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_CloseSets" Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_SetsInfo" Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-        <Storyboard x:Key="CloseSets">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="grid_Sets" Storyboard.TargetProperty="(FrameworkElement.Height)">
-                <SplineDoubleKeyFrame KeyTime="00:00:00" Value="350"/>
-                <SplineDoubleKeyFrame KeyTime="00:00:00.5000000" Value="40"/>
-            </DoubleAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_ShowSets" Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Visible}"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_CloseSets" Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Collapsed}"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_SetsInfo" Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Collapsed}"/>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-        <Storyboard x:Key="ShowProperty">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="grid_Property" Storyboard.TargetProperty="(FrameworkElement.Height)">
-                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="50"/>
-                <EasingDoubleKeyFrame KeyTime="00:00:00.5000000" Value="400"/>
-            </DoubleAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_ShowProperty" Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Collapsed}"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_CloseProperty" Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PropertyMain" Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-        <Storyboard x:Key="CloseProperty">
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="grid_Property" Storyboard.TargetProperty="(FrameworkElement.Height)">
-                <SplineDoubleKeyFrame KeyTime="00:00:00" Value="400"/>
-                <SplineDoubleKeyFrame KeyTime="00:00:00.5000000" Value="50"/>
-            </DoubleAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_ShowProperty" Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Visible}"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="button_CloseProperty" Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Collapsed}"/>
-            </ObjectAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="grid_PropertyMain" Storyboard.TargetProperty="(UIElement.Visibility)">
-                <DiscreteObjectKeyFrame KeyTime="00:00:00.5000000" Value="{x:Static Visibility.Collapsed}"/>
-            </ObjectAnimationUsingKeyFrames>
-        </Storyboard>
-
-        
-        <Style x:Key="{x:Type ProgressBar}"
-       TargetType="{x:Type ProgressBar}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ProgressBar}">
-                        <Grid MinHeight="14"
-              MinWidth="200"
-              Background="{TemplateBinding Background}">
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="CommonStates">
-                                    <VisualState x:Name="Determinate" />
-                                    <VisualState x:Name="Indeterminate">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Duration="00:00:00"
-                                                 Storyboard.TargetName="PART_Indicator"
-                                                 Storyboard.TargetProperty="Background">
-                                                <DiscreteObjectKeyFrame KeyTime="00:00:00">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <SolidColorBrush>Transparent</SolidColorBrush>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
-
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <Border x:Name="PART_Track"
-                  CornerRadius="2"
-                  BorderThickness="1">
-                                <Border.BorderBrush>
-                                    <SolidColorBrush Color="{DynamicResource BorderMediumColor}" />
-                                </Border.BorderBrush>
-                            </Border>
-                            <Border x:Name="PART_Indicator"
-                  CornerRadius="2"
-                  BorderThickness="1"
-                  HorizontalAlignment="Left"
-                  Background="{TemplateBinding Foreground}"
-                  Margin="0,-1,0,1">
-                                <Border.BorderBrush>
-                                    <LinearGradientBrush StartPoint="0,0"
-                                   EndPoint="0,1">
-                                        <GradientBrush.GradientStops>
-                                            <GradientStopCollection>
-                                                <GradientStop Color="{DynamicResource BorderLightColor}"
-                                  Offset="0.0" />
-                                                <GradientStop Color="{DynamicResource BorderMediumColor}"
-                                  Offset="1.0" />
-                                            </GradientStopCollection>
-                                        </GradientBrush.GradientStops>
-                                    </LinearGradientBrush>
-
-                                </Border.BorderBrush>
-                                <Grid ClipToBounds="True"
-                  x:Name="Animation">
-                                    <Rectangle x:Name="PART_GlowRect"
-                         Width="100"
-                         HorizontalAlignment="Left"
-                         Fill="{DynamicResource ProgressBarIndicatorAnimatedFill}"
-                         Margin="-100,0,0,0" />
-                                </Grid>
-                            </Border>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Background">
-                <Setter.Value>
-                    <LinearGradientBrush EndPoint="0,1"
-                           StartPoint="0,0">
-                        <GradientStop Color="{DynamicResource ControlLightColor}"
-                      Offset="0" />
-                        <GradientStop Color="{DynamicResource ControlMediumColor}"
-                      Offset="1" />
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Foreground">
-                <Setter.Value>
-                    <LinearGradientBrush EndPoint="0.5,1"
-                           StartPoint="0.5,0">
-                        <GradientStop Color="{DynamicResource ControlMediumColor}"
-                      Offset="0" />
-                        <GradientStop Color="{DynamicResource ControlDarkColor}"
-                      Offset="1" />
-                    </LinearGradientBrush>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <!--Control colors.-->
-        <Color x:Key="WindowColor">#FFE8EDF9</Color>
-        <Color x:Key="ContentAreaColorLight">#FFC5CBF9</Color>
-        <Color x:Key="ContentAreaColorDark">#FF7381F9</Color>
-
-        <Color x:Key="DisabledControlLightColor">#FFE8EDF9</Color>
-        <Color x:Key="DisabledControlDarkColor">#FFC5CBF9</Color>
-        <Color x:Key="DisabledForegroundColor">#FF888888</Color>
-
-        <Color x:Key="SelectedBackgroundColor">#FFC5CBF9</Color>
-        <Color x:Key="SelectedUnfocusedColor">#FFDDDDDD</Color>
-
-        <Color x:Key="ControlLightColor">White</Color>
-        <Color x:Key="ControlMediumColor">#FF7381F9</Color>
-        <Color x:Key="ControlDarkColor">#FF211AA9</Color>
-
-        <Color x:Key="ControlMouseOverColor">#FF3843C4</Color>
-        <Color x:Key="ControlPressedColor">#FF211AA9</Color>
-
-
-        <Color x:Key="GlyphColor">#FF444444</Color>
-        <Color x:Key="GlyphMouseOver">sc#1, 0.004391443, 0.002428215, 0.242281124</Color>
-
-        <!--Border colors-->
-        <Color x:Key="BorderLightColor">#FFCCCCCC</Color>
-        <Color x:Key="BorderMediumColor">#FF888888</Color>
-        <Color x:Key="BorderDarkColor">#FF444444</Color>
-
-        <Color x:Key="PressedBorderLightColor">#FF888888</Color>
-        <Color x:Key="PressedBorderDarkColor">#FF444444</Color>
-
-        <Color x:Key="DisabledBorderLightColor">#FFAAAAAA</Color>
-        <Color x:Key="DisabledBorderDarkColor">#FF888888</Color>
-
-        <Color x:Key="DefaultBorderBrushDarkColor">Black</Color>
-
-        <!--Control-specific resources.-->
-        <Color x:Key="HeaderTopColor">#FFC5CBF9</Color>
-        <Color x:Key="DatagridCurrentCellBorderColor">Black</Color>
-        <Color x:Key="SliderTrackDarkColor">#FFC5CBF9</Color>
-
-        <Color x:Key="NavButtonFrameColor">#FF3843C4</Color>
-
-        <LinearGradientBrush x:Key="MenuPopupBrush"
-                     EndPoint="0.5,1"
-                     StartPoint="0.5,0">
-            <GradientStop Color="{DynamicResource ControlLightColor}"
-                Offset="0" />
-            <GradientStop Color="{DynamicResource ControlMediumColor}"
-                Offset="0.5" />
-            <GradientStop Color="{DynamicResource ControlLightColor}"
-                Offset="1" />
-        </LinearGradientBrush>
-
-        <LinearGradientBrush x:Key="ProgressBarIndicatorAnimatedFill"
-                     StartPoint="0,0"
-                     EndPoint="1,0">
-            <LinearGradientBrush.GradientStops>
-                <GradientStopCollection>
-                    <GradientStop Color="#000000FF"
-                    Offset="0" />
-                    <GradientStop Color="#600000FF"
-                    Offset="0.4" />
-                    <GradientStop Color="#600000FF"
-                    Offset="0.6" />
-                    <GradientStop Color="#000000FF"
-                    Offset="1" />
-                </GradientStopCollection>
-            </LinearGradientBrush.GradientStops>
-        </LinearGradientBrush>
 
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
-    
 
+        <Style x:Key="BorderHover" TargetType="Border">
+            <Setter Property="Background" Value="Transparent"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding Property.CurentBackGround.Main.Enter}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+       
+        
     </Window.Resources>
-    <Window.DataContext>
-        <local:MainViewModel/>
-    </Window.DataContext>
 
-    <Grid>
-        <tb:TaskbarIcon x:Name="MyNotifyIcon" 
-          
-            ToolTipText="Hello, world!" 
-            Visibility="Visible"
-            LeftClickCommand="{Binding Window.ShowWindowCommand}" >
 
-        </tb:TaskbarIcon>
-
+    <Border  CornerRadius="20,20,20,20">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="Background" Value="{Binding Property.CurentBackGround.Main.Main}"/>
+            </Style>
+        </Border.Style>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="20"/>
-                <RowDefinition />
+                <RowDefinition/>
+                <RowDefinition Height="50"/>
             </Grid.RowDefinitions>
- 
-           <!--WindowButtin-->
-            <StackPanel  Orientation="Horizontal" HorizontalAlignment="Right">
-                <!--Hide-->
-                <Border Padding="3" Width="30">
+            
+            <!--Icon in system trei-->
+            <tb:TaskbarIcon x:Name="MyNotifyIcon" 
+                Visibility="Visible"
+                LeftClickCommand="{Binding Window.ShowWindowCommand}" 
+                 IconSource="pack://application:,,,/images/Icon.ico"> 
+                <tb:TaskbarIcon.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Exit" Command="{Binding Window.CloseWindowCommand}"/>
+                    </ContextMenu>
+                </tb:TaskbarIcon.ContextMenu>
+            </tb:TaskbarIcon>
+
+             <!--Main Frame-->
+            <Border Grid.Row="0" CornerRadius="10,0,0,0">
+                <Frame Content="{Binding Window.CurentPage}" NavigationUIVisibility="Hidden"/>
+            </Border>
+
+            <!--Bottom component: Property button-->
+            <Border Grid.Row="1" Background="{Binding Property.CurentBackGround.Main.Bottom}" CornerRadius="0,0,20,20">
+
+                <Border  x:Name="button_ShowProperty" HorizontalAlignment="Right" Margin="10" VerticalAlignment="Center" Style="{StaticResource BorderHover}" CornerRadius="10">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseLeftButtonUp">
-                            <i:InvokeCommandAction Command="{Binding  Window.HideProgram}"/>
+                            <i:InvokeCommandAction Command="{Binding Window.ChangePageCommand}" CommandParameter="Setting" />
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
-                    <Image Source="pack://application:,,,/images/hide.png"  Stretch="Fill"/>
+                    <svgc:SvgViewbox   Source="{Binding Property.CurentImageSourse.Sourse[Setting]}" Width="25" Margin="3,3,3,3" />
+
                 </Border>
-                
-                <!--Close-->
-                <Border Padding="3" Width="30">
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseLeftButtonUp">
-                            <i:InvokeCommandAction Command="{Binding  Window.CloseProgram}"/>
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                    <Image Source="pack://application:,,,/images/close.png"  />
-                </Border>
-                
-            </StackPanel>
-
-            <Grid Grid.Row="1">
-                <!--SetsValue-->
-                <Grid x:Name="grid_Sets" Background="Aqua" Height="40" VerticalAlignment="Top" Panel.ZIndex="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-
-                    <!--Show Sets-->
-                    <Grid Grid.Row="0">
-                        <Border HorizontalAlignment="Left"  x:Name="button_ShowSets">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="MouseLeftButtonUp">
-                                    <ei:ControlStoryboardAction Storyboard="{StaticResource ShowSets}" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-
-                            <Image Source="pack://application:,,,/images/settingsTime.png" Width="30" Margin="5"/>
-                        </Border>
-                        
-                        <Button x:Name="button_CloseSets" HorizontalAlignment="Left" Content="Sets close" Visibility="Collapsed">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="Click">
-                                    <ei:ControlStoryboardAction Storyboard="{StaticResource CloseSets}" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </Button>
-
-                        <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2"  Width="30" HorizontalAlignment="Center" BorderThickness="2" CornerRadius="20" BorderBrush="Black" Padding="3">
-                                <Image Source="pack://application:,,,/images/pause.png"/>
-                            </Border>
-
-                            <Border Grid.Row="4" Grid.Column="1"  Width="30" HorizontalAlignment="Center" BorderThickness="2" CornerRadius="20" BorderBrush="Black" Padding="3">
-                                <Image Source="pack://application:,,,/images/play-button.png"/>
-                            </Border>
-                        </StackPanel>-->
-                    </Grid>
-
-                    <Grid x:Name="grid_SetsInfo" Grid.Row="1" Visibility="Collapsed">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="auto"/>
-                            <RowDefinition/>
-                        </Grid.RowDefinitions>
-
-                        <!--Cicle Time Rest-->
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                            </Grid.ColumnDefinitions>
-
-                            <StackPanel>
-                                <!--Cicle-->
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Sets"/>
-                                    <TextBox Width="50" Text="{Binding Timer.CountCycles, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                </StackPanel>
-                                <!--Time-->
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Time work"/>
-                                    <TextBox  Width="50" Text="{Binding Timer.TimeWorkInMinute, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                </StackPanel>
-                                <!--Rest-->
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Time rest"/>
-                                    <TextBox Width="50" Text="{Binding Timer.TimeBreakInMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                                </StackPanel>
-                            </StackPanel>
-
-                            <TextBlock Grid.Column="1" Text="Total"/>
-                        </Grid>
-
-                        <!--Big Rest-->
-                        <Grid Grid.Row="1">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="auto"/>
-                                <RowDefinition  Height="auto"/>
-                                <RowDefinition  Height="auto"/>
-                            </Grid.RowDefinitions>
-
-                            <ListBox  ItemsSource="{Binding Timer.Cycles}" Height="100" SelectedIndex="{Binding Timer.SelectedBigRest}">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="{Binding Position}"/>
-                                            <TextBlock Text="{Binding ActionOfTime}"/>
-                                        </StackPanel>
-
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-
-                            <StackPanel Grid.Row="1" Orientation="Horizontal">
-                                <TextBlock Text="Time big rest"/>
-                                <TextBox Width="50" Text="{Binding Timer.TimeBigRestInMinutes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            </StackPanel>
-
-                            <Button Grid.Row="2" Content="Start">
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="Click">
-                                        <i:InvokeCommandAction Command="{Binding Timer.Start}"/>
-                                        <ei:ControlStoryboardAction Storyboard="{StaticResource CloseSets}" />
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-                            </Button>
-                        </Grid>
-                    </Grid>
-
-                </Grid>
-
-                <!--Main-->
-                <Grid VerticalAlignment="Center">
-                    <Grid.RowDefinitions>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-
-
-                    <Image Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2"   Source="pack://application:,,,/images/computer.png" Width="80"/>
-
-                    <TextBlock Grid.Row="1" Grid.Column="0" FontSize="24" HorizontalAlignment="Center" Text="{Binding Timer.LabelTimer}"/>
-                    <StackPanel  Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center">
-                        <TextBlock FontSize="24" Text="{Binding Timer.CurentPosition}"/>
-                        <TextBlock FontSize="24" Text="/" />
-                        <TextBlock FontSize="24" Text="{Binding Timer.Cycles.Count}"/>
-                    </StackPanel>
-                    
-
-                    <ProgressBar  Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"  Height="30" Margin="5"  Value="{Binding Timer.ValueProgress}" />
-
-                    <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding Timer.VisibilityPauseButton, Converter={StaticResource BoolToVis}}"  Width="30" HorizontalAlignment="Center" BorderThickness="2" CornerRadius="20" BorderBrush="Black" Padding="3">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="MouseLeftButtonUp">
-                                <i:InvokeCommandAction Command="{Binding Timer.PauseCommand}"/>
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                        <Image Source="pack://application:,,,/images/pause.png"/>
-                    </Border>
-
-                    <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Visibility="{Binding Timer.VisibilityPlayButton, Converter={StaticResource BoolToVis}}"  Width="30" HorizontalAlignment="Center" BorderThickness="2" CornerRadius="20" BorderBrush="Black" Padding="3">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="MouseLeftButtonUp">
-                                <i:InvokeCommandAction Command="{Binding Timer.PlayCommand}"/>
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                        <Image Source="pack://application:,,,/images/play-button.png"/>
-                    </Border>
-                    <!--<StackPanel>
-                        <TextBlock Text="{Binding Timer.Labelwork}"/>
-                        <TextBlock Text="{Binding Timer.LabelRest}"/>
-                        <TextBlock FontSize="18" Text="{Binding Timer.TypeTimerLabel}"/>
-                        <Button  Command="{Binding Timer.PauseCommand}" Content="Pause"/>
-                        <Button  Command="{Binding Timer.PlayCommand}" Content="Play"/>
-                        <TextBlock Text="Extra"/>
-                        <TextBlock Text="{Binding Timer.ExtraTimeWorkLabel}"/>
-                        <TextBlock Text="{Binding Timer.ExtraTimeRestLabel}"/>
-
-                        <Button  Command="{Binding Timer.StopExtra}" Content="StopExtra"/>
-                        <ProgressBar Height="50" Value="30"/>
-                    </StackPanel>-->
-                </Grid>
-
-                <!--Property-->
-                <Grid x:Name="grid_Property" Height="50" VerticalAlignment="Bottom" Background="Bisque" Panel.ZIndex="3">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition/>
-                    </Grid.RowDefinitions>
-
-                    <!--Show Close Proprty-->
-                    <Grid>
-                        <Button x:Name="button_ShowProperty" Content="Sgow Property" HorizontalAlignment="Left">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="Click">
-                                    <ei:ControlStoryboardAction Storyboard="{StaticResource ShowProperty}" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </Button>
-                        <Button x:Name="button_CloseProperty" Content="Close Property"  HorizontalAlignment="Left" Visibility="Collapsed">
-                            <i:Interaction.Triggers>
-                                <i:EventTrigger EventName="Click">
-                                    <ei:ControlStoryboardAction Storyboard="{StaticResource CloseProperty}" />
-                                </i:EventTrigger>
-                            </i:Interaction.Triggers>
-                        </Button>
-                    </Grid>
-
-                    <Grid x:Name="grid_PropertyMain" Grid.Row="1" Visibility="Collapsed">
-                        <TextBlock Text="Property" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    </Grid>
-                </Grid>
-            </Grid>
+            </Border>
         </Grid>
-    </Grid>
+    </Border>
+    
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding Window.WindowLoadedCommand}"/>
+        </i:EventTrigger>
+        <i:EventTrigger EventName="Deactivated">
+            <i:InvokeCommandAction Command="{Binding Window.HideWindowCommand}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
 </Window>

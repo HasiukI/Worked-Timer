@@ -1,0 +1,399 @@
+﻿<Page x:Class="Worked_Timer.Pages.SettingPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+      xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+      xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+      xmlns:local="clr-namespace:Worked_Timer.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="330" d:DesignWidth="360"
+      Title="SettingPage"
+      x:Name="SettingP">
+    <Page.Resources>
+        
+        <!--ScrollLanguage-->
+        <Storyboard x:Key="LanguageOpen">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SettingLanguageBorder" Storyboard.TargetProperty="Height">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.4000000" Value="100"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="SettingLanguageBorder">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="ImageRotateLanguageBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)" From="0" To="-180" Duration="0:0:0.4"/>
+        </Storyboard>
+        <Storyboard x:Key="LanguageClose">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SettingLanguageBorder" Storyboard.TargetProperty="Height">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="100"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.4000000" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="SettingLanguageBorder">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.4000000" Value="{x:Static Visibility.Collapsed}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="ImageRotateLanguageBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)" From="180" To="-0" Duration="0:0:0.4"/>
+        </Storyboard>
+
+        <!--ScrollLanguage-->
+        <Storyboard x:Key="ColorOpen">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SettingColorBorder" Storyboard.TargetProperty="Height">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.4000000" Value="100"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="SettingColorBorder">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="ImageRotateColorsBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)" From="0" To="-180" Duration="0:0:0.4"/>
+        </Storyboard>
+        <Storyboard x:Key="ColorClose">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SettingColorBorder" Storyboard.TargetProperty="Height">
+                <EasingDoubleKeyFrame KeyTime="00:00:00" Value="100"/>
+                <EasingDoubleKeyFrame KeyTime="00:00:00.4000000" Value="0"/>
+            </DoubleAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="SettingColorBorder">
+                <DiscreteObjectKeyFrame KeyTime="00:00:00.4000000" Value="{x:Static Visibility.Collapsed}"/>
+            </ObjectAnimationUsingKeyFrames>
+            <DoubleAnimation Storyboard.TargetName="ImageRotateColorsBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(RotateTransform.Angle)" From="-180" To="0" Duration="0:0:0.4"/>
+        </Storyboard>
+
+        <Style x:Key="Win11ScrollBarStyle" TargetType="{x:Type ScrollBar}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollBar}">
+                        <Border CornerRadius="4" Background="#33000000" Width="8" Margin="2">
+                            <Track Name="PART_Track" IsDirectionReversed="true">
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate>
+                                                <Border Background="{Binding Property.CurentBackGround.Accent.Accent}" BorderBrush="{Binding Property.CurentBackGround.Accent.Accent}" CornerRadius="4"/>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Визначення Win11ScrollShadowEffect -->
+        <DropShadowEffect x:Key="Win11ScrollShadowEffect" Color="Gray" Direction="315" ShadowDepth="2" Opacity="0.5"/>
+
+
+
+        <Style x:Key="Win11ScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid Background="{TemplateBinding Background}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" Grid.Column="0" Grid.Row="0" CanContentScroll="{TemplateBinding CanContentScroll}" />
+
+                            <ScrollBar x:Name="PART_VerticalScrollBar" Grid.Column="1" Width="8" Margin="2,0,2,0"
+                       IsTabStop="False" Orientation="Vertical" 
+                       Style="{DynamicResource Win11ScrollBarStyle}" 
+                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" 
+                       Value="{TemplateBinding VerticalOffset}" 
+                       Maximum="{TemplateBinding ScrollableHeight}" 
+                       ViewportSize="{TemplateBinding ViewportHeight}" />
+
+                            <ScrollBar x:Name="PART_HorizontalScrollBar" Grid.Row="1" Height="8" Margin="0,2,0,2"
+                       IsTabStop="False" Orientation="Horizontal" 
+                       Style="{DynamicResource Win11ScrollBarStyle}" 
+                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" 
+                       Value="{TemplateBinding HorizontalOffset}" 
+                       Maximum="{TemplateBinding ScrollableWidth}"
+                       ViewportSize="{TemplateBinding ViewportWidth}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="BorderHover" TargetType="Border">
+            <Setter Property="Background" Value="Transparent"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{Binding Property.CurentBackGround.Main.Enter}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Border Style="{StaticResource BorderHover}" Grid.Column="1"  Margin="0,20,20,10" Padding="5" CornerRadius="5" VerticalAlignment="Top" HorizontalAlignment="Right" Cursor="Hand">
+                <StackPanel  Orientation="Horizontal">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseLeftButtonUp">
+                            <i:InvokeCommandAction Command="{Binding Window.ChangePageCommand}" CommandParameter="Default" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+
+                    <svgc:SvgViewbox Source="{Binding Property.CurentImageSourse.Sourse[Home]}" Width="18" Margin="5,0,0,0"/>
+                    <TextBlock  Text="{Binding Property.CurentLanguage.Strings[OtherBack]}"  Foreground="{Binding Property.CurentBackGround.Main.Font}" VerticalAlignment="Center" Margin="5,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+
+        <ScrollViewer Grid.Row="1" Style="{StaticResource Win11ScrollViewerStyle}">
+            <StackPanel >
+
+                <i:Interaction.Triggers>
+                    <ei:DataTrigger Binding="{Binding Animation.SettingLanguage}" Value="1">
+                        <ei:ControlStoryboardAction Storyboard="{StaticResource LanguageClose}"/>
+                    </ei:DataTrigger>
+                    <ei:DataTrigger Binding="{Binding Animation.SettingLanguage}" Value="2">
+                        <ei:ControlStoryboardAction Storyboard="{StaticResource LanguageOpen}"/>
+                    </ei:DataTrigger>
+
+                    <ei:DataTrigger Binding="{Binding Animation.SettingColor}" Value="1">
+                        <ei:ControlStoryboardAction Storyboard="{StaticResource ColorClose}"/>
+                    </ei:DataTrigger>
+                    <ei:DataTrigger Binding="{Binding Animation.SettingColor}" Value="2">
+                        <ei:ControlStoryboardAction Storyboard="{StaticResource ColorOpen}"/>
+                    </ei:DataTrigger>
+                </i:Interaction.Triggers>
+
+
+               
+
+                <!--Language-->
+                <StackPanel Margin="20,5">
+                    <StackPanel.Effect>
+                        <DropShadowEffect Color="{Binding Property.CurentBackGround.Main.Shadow}" Direction="315" Opacity="0.2" BlurRadius="15" />
+                    </StackPanel.Effect>
+                    <!--Label-->
+                    <Border  Background="{Binding Property.CurentBackGround.Main.Section}" CornerRadius="5,5,0,0" Cursor="Hand"  Padding="10">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseLeftButtonUp">
+                                <i:InvokeCommandAction Command="{Binding Animation.ShowSetersCommand}" CommandParameter="Language"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" FontSize="18" Text="{Binding Property.CurentLanguage.Strings[SettingLanguage]}"  Foreground="{Binding Property.CurentBackGround.Main.Font}" />
+
+                            <Border x:Name="ImageRotateLanguageBorder" Grid.Column="1"  Margin="0,0,15,0" HorizontalAlignment="Right" RenderTransformOrigin="0.5,0.5">
+                                <Border.RenderTransform>
+                                    <RotateTransform Angle="0"/>
+                                </Border.RenderTransform>
+                                <svgc:SvgViewbox   Source="{Binding Property.CurentImageSourse.Sourse[Arrow]}" Width="20" />
+                            </Border>
+                        </Grid>
+                    </Border>
+                    <Border x:Name="SettingLanguageBorder" Background="{Binding Property.CurentBackGround.Main.Section}"  Height="100" Visibility="Visible" BorderBrush="{Binding Property.CurentBackGround.Accent.Accent}" BorderThickness="0,1,0,0" CornerRadius="0,0,10,10">
+                        <ListBox ItemsSource="{Binding Property.Languages}" SelectedItem="{Binding Property.CurentLanguage}" Background="Transparent" BorderThickness="0">
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <UniformGrid Columns="3"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+                            
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <Image Source="{Binding Image}" Width="40" />
+                                        <TextBlock  Foreground="{Binding Path=DataContext.Property.CurentBackGround.Main.Font, ElementName=SettingP}" Text="{Binding LanguageName}"  HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                    
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border x:Name="Border" BorderThickness="0" Margin="10"  Cursor="Hand" Background="{TemplateBinding Background}">
+                                                    <ContentPresenter />
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter TargetName="Border" Property="BorderThickness" Value="1" />
+                                                        <Setter TargetName="Border" Property="BorderBrush" Value="{Binding Path=DataContext.Property.CurentBackGround.Accent.Accent, ElementName=SettingP}" />
+                                                        <Setter TargetName="Border" Property="BorderThickness" Value="0,0,0,1" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+
+                        </ListBox>
+                    </Border>
+                </StackPanel>
+
+                
+                <StackPanel Margin="20,5">
+                    <StackPanel.Effect>
+                        <DropShadowEffect Color="{Binding Property.CurentBackGround.Main.Shadow}" Direction="315" Opacity="0.2" BlurRadius="15" />
+                    </StackPanel.Effect>
+                    <!--Label-->
+                    <Border  Background="{Binding Property.CurentBackGround.Main.Section}" CornerRadius="5,5,0,0" Cursor="Hand"  Padding="10">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseLeftButtonUp">
+                                <i:InvokeCommandAction Command="{Binding Animation.ShowSetersCommand}" CommandParameter="Color"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" FontSize="18" Text="{Binding Property.CurentLanguage.Strings[SettingColor]}"  Foreground="{Binding Property.CurentBackGround.Main.Font}"/>
+                            <Border x:Name="ImageRotateColorsBorder" Grid.Column="1"  Margin="0,0,15,0" HorizontalAlignment="Right" RenderTransformOrigin="0.5,0.5">
+                                <Border.RenderTransform>
+                                    <RotateTransform Angle="0"/>
+                                </Border.RenderTransform>
+                                <svgc:SvgViewbox   Source="{Binding Property.CurentImageSourse.Sourse[Arrow]}" Width="20" />
+                            </Border>
+                        </Grid>
+                    </Border>
+                    
+                    <Border x:Name="SettingColorBorder" Background="{Binding Property.CurentBackGround.Main.Section}"  Height="100" Visibility="Visible" BorderBrush="{Binding Property.CurentBackGround.Accent.Accent}" BorderThickness="0,1,0,0" CornerRadius="0,0,10,10">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <!--Main color-->
+                            <Border Grid.Column="0" BorderBrush="{Binding Property.CurentBackGround.Accent.Accent}" BorderThickness="0,0,1,0">
+
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Border BorderBrush="{Binding Property.CurentBackGround.Accent.Accent}" BorderThickness="0,0,0,1">
+                                        <TextBlock Text="{Binding Property.CurentLanguage.Strings[SettingColorMain]}"  Foreground="{Binding Property.CurentBackGround.Main.Font}" HorizontalAlignment="Center"/>
+                                    </Border>
+
+                                    <ListBox Grid.Row="1" ItemsSource="{Binding Property.MainColors}" SelectedItem="{Binding Property.CurentColorMain}" Background="Transparent" BorderThickness="0">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Columns="3"/>
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+                                        
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Ellipse Width="20" Height="20" Cursor="Hand" Fill="{Binding Main}"/>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+
+
+                                        <ListBox.ItemContainerStyle>
+                                            <Style TargetType="ListBoxItem">
+                                                <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="ListBoxItem">
+                                                            <Border x:Name="Border" BorderThickness="0" Margin="10,20"  Cursor="Hand" Background="{TemplateBinding Background}">
+                                                                <ContentPresenter />
+                                                            </Border>
+                                                            <ControlTemplate.Triggers>
+                                                                <Trigger Property="IsSelected" Value="True">
+                                                                    <Setter TargetName="Border" Property="BorderThickness" Value="1" />
+                                                                    <Setter TargetName="Border" Property="BorderBrush" Value="{Binding Path=DataContext.Property.CurentBackGround.Accent.Accent, ElementName=SettingP}" />
+                                                                    <Setter TargetName="Border" Property="CornerRadius" Value="10" />
+                                                                </Trigger>
+                                                            </ControlTemplate.Triggers>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </ListBox.ItemContainerStyle>
+                                    </ListBox>
+                                </Grid>
+                            </Border>
+
+                            <!--AccentColot-->
+                            <Border Grid.Column="1">
+
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="auto"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+
+                                    <Border BorderBrush="{Binding Property.CurentBackGround.Accent.Accent}" BorderThickness="0,0,0,1">
+                                        <TextBlock  Foreground="{Binding Property.CurentBackGround.Main.Font}" Text="{Binding Property.CurentLanguage.Strings[SettingColorAdditional]}" HorizontalAlignment="Center"/>
+                                    </Border>
+
+                                    <ListBox Grid.Row="1" ItemsSource="{Binding Property.AccentColors}" SelectedItem="{Binding Property.CurentAccentColor}" Background="Transparent" BorderThickness="0">
+                                        <ListBox.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Columns="3"/>
+                                            </ItemsPanelTemplate>
+                                        </ListBox.ItemsPanel>
+
+                                        <ListBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <Ellipse Width="20" Height="20" Fill="{Binding Accent}"/>
+                                            </DataTemplate>
+                                        </ListBox.ItemTemplate>
+
+                                    </ListBox>
+                                </Grid>
+
+
+                            </Border>
+                        </Grid>
+
+
+
+
+
+
+                    </Border>
+
+                    <Grid Margin="5,15">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="auto"/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Image Source="pack://application:,,,/images/MyLogo.png" Width="60"/>
+
+                        <StackPanel Grid.Column="1" Margin="5,0" VerticalAlignment="Center">
+                            <TextBlock Text="Worked Timer. version 1.0"  Foreground="{Binding Property.CurentBackGround.Main.Font}" FontSize="10"/>
+                            <TextBlock Text="Author: Hasiuk IV"  Foreground="{Binding Property.CurentBackGround.Main.Font}" FontSize="10"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+   
+</Page>

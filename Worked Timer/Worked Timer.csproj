@@ -10,27 +10,118 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\ArrowBlack.svg" />
+    <None Remove="images\ArrowUp.svg" />
+    <None Remove="images\ArrowWhite.svg" />
+    <None Remove="images\Arrow_Left.png" />
+    <None Remove="images\Arrow_Right.png" />
+    <None Remove="images\Break.png" />
+    <None Remove="images\Break.svg" />
+    <None Remove="images\BreakBlack.svg" />
+    <None Remove="images\breakView.png" />
+    <None Remove="images\BreakWhite.svg" />
     <None Remove="images\close.png" />
+    <None Remove="images\Close.svg" />
+    <None Remove="images\CloseBlack.svg" />
+    <None Remove="images\CloseWhite.svg" />
     <None Remove="images\computer.png" />
+    <None Remove="images\Cycle.png" />
+    <None Remove="images\Cycle.svg" />
+    <None Remove="images\CycleBlack.svg" />
+    <None Remove="images\CycleWhite.svg" />
+    <None Remove="images\Destroy.png" />
+    <None Remove="images\Destroy.svg" />
+    <None Remove="images\DestroyBlack.svg" />
+    <None Remove="images\DestroyWhite.svg" />
+    <None Remove="images\fried-rice.png" />
     <None Remove="images\hide.png" />
+    <None Remove="images\HideOclock.png" />
+    <None Remove="images\Home.svg" />
+    <None Remove="images\HomeBlack.svg" />
+    <None Remove="images\HomeWhite.svg" />
+    <None Remove="images\Icon.ico" />
+    <None Remove="images\Icon.png" />
+    <None Remove="images\IconExtra.png" />
+    <None Remove="images\IconWork.png" />
+    <None Remove="images\Lunch.png" />
+    <None Remove="images\Lunch.svg" />
+    <None Remove="images\LunchBlack.svg" />
+    <None Remove="images\lunchView.png" />
+    <None Remove="images\LunchWhite.svg" />
+    <None Remove="images\MyLogo.png" />
+    <None Remove="images\nature.png" />
+    <None Remove="images\oclock.png" />
+    <None Remove="images\OclockEmpty.svg" />
     <None Remove="images\pause.png" />
+    <None Remove="images\Pause.svg" />
+    <None Remove="images\PauseBlack.svg" />
+    <None Remove="images\PauseWhite.svg" />
     <None Remove="images\play-button.png" />
+    <None Remove="images\Play.png" />
+    <None Remove="images\Play.svg" />
+    <None Remove="images\PlayBlack.svg" />
+    <None Remove="images\PlayWhite.svg" />
+    <None Remove="images\Setting.png" />
+    <None Remove="images\SettingBlack.svg" />
     <None Remove="images\settingsTime.png" />
+    <None Remove="images\SettingWhite.svg" />
+    <None Remove="images\StartOclock.png" />
+    <None Remove="images\ukraine.png" />
+    <None Remove="images\united-states.png" />
+    <None Remove="images\up-arrow.png" />
+    <None Remove="images\warningView.png" />
+    <None Remove="images\Welldone.png" />
+    <None Remove="images\Work.png" />
+    <None Remove="images\Work.svg" />
+    <None Remove="images\WorkBlack.svg" />
+    <None Remove="images\workView.png" />
+    <None Remove="images\WorkWhite.svg" />
+    <None Remove="images\wrokView.png" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
     <PackageReference Include="MvvmLightLibs" Version="5.4.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="SharpVectors.Wpf" Version="1.8.4" />
     <PackageReference Include="System.Windows.Interactivity.WPF" Version="2.0.20525" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="images\close.png" />
-    <Resource Include="images\computer.png" />
-    <Resource Include="images\hide.png" />
-    <Resource Include="images\pause.png" />
-    <Resource Include="images\play-button.png" />
-    <Resource Include="images\settingsTime.png" />
+    <Resource Include="images\ArrowBlack.svg" />
+    <Resource Include="images\ArrowWhite.svg" />
+    <Resource Include="images\BreakBlack.svg" />
+    <Resource Include="images\breakView.png" />
+    <Resource Include="images\BreakWhite.svg" />
+    <Resource Include="images\CloseBlack.svg" />
+    <Resource Include="images\CloseWhite.svg" />
+    <Resource Include="images\CycleBlack.svg" />
+    <Resource Include="images\CycleWhite.svg" />
+    <Resource Include="images\DestroyBlack.svg" />
+    <Resource Include="images\DestroyWhite.svg" />
+    <Resource Include="images\HomeBlack.svg" />
+    <Resource Include="images\HomeWhite.svg" />
+    <Resource Include="images\Icon.ico" />
+    <Resource Include="images\Icon.png" />
+    <Resource Include="images\IconExtra.png" />
+    <Resource Include="images\IconWork.png" />
+    <Resource Include="images\LunchBlack.svg" />
+    <Resource Include="images\lunchView.png" />
+    <Resource Include="images\LunchWhite.svg" />
+    <Resource Include="images\MyLogo.png" />
+    <Resource Include="images\PauseBlack.svg" />
+    <Resource Include="images\PauseWhite.svg" />
+    <Resource Include="images\PlayBlack.svg" />
+    <Resource Include="images\PlayWhite.svg" />
+    <Resource Include="images\SettingBlack.svg" />
+    <Resource Include="images\SettingWhite.svg" />
+    <Resource Include="images\ukraine.png" />
+    <Resource Include="images\united-states.png" />
+    <Resource Include="images\warningView.png" />
+    <Resource Include="images\Welldone.png" />
+    <Resource Include="images\WorkBlack.svg" />
+    <Resource Include="images\workView.png" />
+    <Resource Include="images\WorkWhite.svg" />
   </ItemGroup>
 
 </Project>
