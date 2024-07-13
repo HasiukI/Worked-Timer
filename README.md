@@ -32,7 +32,7 @@ This project was created on **WPF** using **MVVM** and additional packages: **Ha
 
 # Install
  In order to install the program:
-> - Download the program [Setup.exe](https://1drv.ms/f/c/92e17d95de54b4b3/EgI0orPtNyZDnjT8__8CWcABiNz2rMnVYnTiOFcYr_C4Bg)
+> - Download the program [WorkedTimer.exe](https://1drv.ms/f/c/92e17d95de54b4b3/EgI0orPtNyZDnjT8__8CWcABiNz2rMnVYnTiOFcYr_C4Bg)
 > - You may need to install [.NET SDK 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) 
 > - You may need to disable the antivirus because the program writes to files in the local folder 
 
